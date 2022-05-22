@@ -1,12 +1,15 @@
+package Session.Map;
 import javax.swing.text.DefaultCaret;
 
-public class Session
+public class MapModel
 {
   private Chip[][] _gameBoard;
   private int _playerCount;
   private int _winConnections = 4;  
-  
-  public Session(int _playerCount, int size)
+  private int gridRow = 7;
+  private int gridCol = 7;
+
+  public MapModel(int _playerCount, int size)
   {
 	  _gameBoard = new Chip[size][size];
     this._playerCount = _playerCount;
@@ -125,5 +128,54 @@ public class Session
   public static void clearBoard()
   {
     
+  }
+
+  public void startSession()
+  {
+    System.out.println("The session has been started");
+  }
+  public void endSession()
+  {
+    System.out.println("The session has ended");
+    
+  }
+  public class Chip
+  {
+    public static final char RED = 'R';
+    public static final char YELLOW = 'Y';
+    public static final char GREEN = 'G';
+    public static final char PURPLE = 'P';
+
+    private static int _turnCounter = 0;
+    private int _turn = _turnCounter;
+    private char _color;
+  
+    public Chip(int playerCount)
+    {
+      if(_turnCounter > playerCount) 
+      {
+        _turnCounter = 1;
+      } 
+      else 
+      {
+        _turnCounter++;
+      }
+      _turn = _turnCounter;
+    }
+
+    public char getColor()
+    {
+      return _color;
+    }
+
+    public int getTurn()
+    {
+      return _turn;
+    }  
+
+    public static int getTurnCounter()
+    {
+      return _turnCounter;
+    }
   }
 }
