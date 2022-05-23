@@ -1,6 +1,7 @@
 import javax.swing.*;
-
 import org.w3c.dom.Text;
+
+import Session.Settings;
 
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
@@ -22,8 +23,6 @@ public class Main {
         _window.setPreferredSize(new Dimension(2048, 2048));
         _window.setVisible(true);
         _window.setLayout(new BorderLayout());
-        Settings settings = Settings.getInstance();
-        settings.setBackground(Color.blue);
-        _window.add(settings, BorderLayout.EAST);
+        
     }
 }

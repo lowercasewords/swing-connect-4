@@ -1,18 +1,47 @@
 package Session.Map;
+
+import javax.swing.JToggleButton;
 import javax.swing.text.DefaultCaret;
 
+import Exceptions.TooManyPlayersException;
+/**
+ * MVC Pattern in use!
+ * Talks to the database to retrieve the overal scores
+*/
 public class MapModel
 {
   private Chip[][] _gameBoard;
   private int _playerCount;
-  private int _winConnections = 4;  
-  private int gridRow = 7;
-  private int gridCol = 7;
-
-  public MapModel(int _playerCount, int size)
+  private int _rows;
+  private int _cols;
+  private static final int WIN_CONNECTIONS = 4;
+  private static final int MAX_PLAYERS = 4;
+  private static final int MAX_ROWS = 14;
+  private static final int MAX_COLS = 14;
+  // Ensuring SingleTon Pattern
+  
+  public int getPlayerCount() { return _playerCount; }
+  public int getRows() { return _rows; }
+  public int getCols() { return _cols; }
+  public Chip[][] getGameBoard() { return _gameBoard; }
+  public Chip getChip(int row, int col) { return _gameBoard[row][col]; }
+  
+  public void startSession(int playerCount, int rows, int cols) throws TooManyPlayersException
   {
-	  _gameBoard = new Chip[size][size];
-    this._playerCount = _playerCount;
+    _gameBoard = new Chip[rows][cols];
+    if(playerCount > MAX_PLAYERS) 
+    {
+      _playerCount = playerCount;
+    }  
+    else
+    {
+      throw new TooManyPlayersException(playerCount, this);
+    }
+    System.out.println("The session has been started");
+  }
+  public void endSession()
+  {
+    System.out.println("The session has ended");
   }
 
   public boolean placeChip(int col)
@@ -23,7 +52,7 @@ public class MapModel
     {
       if (_gameBoard[i][col] != null)
       {
-        _gameBoard[i][col] = new Chip(_playerCount);
+        _gameBoard[i][col] = new Chip();
         row = i;
       }
     }
@@ -38,7 +67,7 @@ public class MapModel
             //horizontal
           case 0:
             int tempCol = col;
-            while(con < _winConnections)
+            while(con < WIN_CONNECTIONS)
             {
               if (_gameBoard[row][tempCol].getTurn() == Chip.getTurnCounter())
               {
@@ -51,7 +80,7 @@ public class MapModel
               tempCol++;  
             }
             tempCol = col-1;
-            while(con < _winConnections)
+            while(con < WIN_CONNECTIONS)
             {
               if (_gameBoard[row][tempCol].getTurn() == Chip.getTurnCounter())
               {
@@ -73,9 +102,9 @@ public class MapModel
             con = 0;
             tempCol = col;
             int tempRow = row;
-      			while(true)
+            while(true)
             {
-              while(con < _winConnections)
+              while(con < WIN_CONNECTIONS)
               {
                 if (_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
                 {
@@ -89,7 +118,7 @@ public class MapModel
               }
 
               tempRow = row - 1;
-              while(con < _winConnections)
+              while(con < WIN_CONNECTIONS)
               {
                 if (_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
                 {
@@ -122,37 +151,18 @@ public class MapModel
        
       }
     }
-    return false;
+    return false;  
   }
 
-  public static void clearBoard()
+  public class Chip extends JToggleButton
   {
-    
-  }
-
-  public void startSession()
-  {
-    System.out.println("The session has been started");
-  }
-  public void endSession()
-  {
-    System.out.println("The session has ended");
-    
-  }
-  public class Chip
-  {
-    public static final char RED = 'R';
-    public static final char YELLOW = 'Y';
-    public static final char GREEN = 'G';
-    public static final char PURPLE = 'P';
-
     private static int _turnCounter = 0;
     private int _turn = _turnCounter;
     private char _color;
   
-    public Chip(int playerCount)
+    public Chip()
     {
-      if(_turnCounter > playerCount) 
+      if(_turnCounter > _playerCount) 
       {
         _turnCounter = 1;
       } 
@@ -161,11 +171,6 @@ public class MapModel
         _turnCounter++;
       }
       _turn = _turnCounter;
-    }
-
-    public char getColor()
-    {
-      return _color;
     }
 
     public int getTurn()
