@@ -1,9 +1,9 @@
 package Session.Map;
 
 import javax.swing.JToggleButton;
-import javax.swing.text.DefaultCaret;
+import javax.swing.*;
 
-import Exceptions.TooManyPlayersException;
+import Exceptions.InvalidPlayerAmountException;
 /**
  * MVC Pattern in use!
  * Talks to the database to retrieve the overal scores
@@ -14,10 +14,17 @@ public class MapModel
   private int _playerCount;
   private int _rows;
   private int _cols;
-  private static final int WIN_CONNECTIONS = 4;
-  private static final int MAX_PLAYERS = 4;
-  private static final int MAX_ROWS = 14;
-  private static final int MAX_COLS = 14;
+
+  public static final int WIN_CONNECTIONS = 4;
+
+  public static final int MAX_PLAYERS = 4;
+  public static final int MAX_ROWS = 14;
+  public static final int MAX_COLS = 14;
+
+  public static final int MIN_PLAYERS = 2;
+  public static final int MIN_ROWS = 7;
+  public static final int MIN_COLS = 7;
+
   // Ensuring SingleTon Pattern
   
   public int getPlayerCount() { return _playerCount; }
@@ -26,7 +33,7 @@ public class MapModel
   public Chip[][] getGameBoard() { return _gameBoard; }
   public Chip getChip(int row, int col) { return _gameBoard[row][col]; }
   
-  public void startSession(int playerCount, int rows, int cols) throws TooManyPlayersException
+  public void startSession(int playerCount, int rows, int cols) throws InvalidPlayerAmountException
   {
     _gameBoard = new Chip[rows][cols];
     if(playerCount > MAX_PLAYERS) 
@@ -35,7 +42,8 @@ public class MapModel
     }  
     else
     {
-      throw new TooManyPlayersException(playerCount, this);
+      // raises the exception, passing current model instance as an argument
+      throw new InvalidPlayerAmountException(this);
     }
     System.out.println("The session has been started");
   }
@@ -44,7 +52,13 @@ public class MapModel
     System.out.println("The session has ended");
   }
 
-  public boolean placeChip(int col)
+  /**
+   * Places a chip in the board
+   * @param col in what column should chip be placed
+   * @return was the placement of the chip successful (e.g false if trying to put chip off the board)
+   * @throws IndexOutOfBoundsException when try accessing a non-existing column
+   */
+  public boolean placeChip(int col) throws IndexOutOfBoundsException
   {
     //places chip at index of col.
     int row = 0;
@@ -154,12 +168,15 @@ public class MapModel
     return false;  
   }
 
-  public class Chip extends JToggleButton
+  public class Chip
   {
+    // counting starts at zero 
     private static int _turnCounter = 0;
     private int _turn = _turnCounter;
-    private char _color;
   
+    /**
+     * Increments the turn counter, and then binds the the chip instance to the turn number
+     */
     public Chip()
     {
       if(_turnCounter > _playerCount) 

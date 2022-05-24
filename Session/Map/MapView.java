@@ -5,8 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import Session.Map.MapModel.Chip;
-import Exceptions.TooManyPlayersException;
-
+import Exceptions.InvalidPlayerAmountException;
 /**
  * MVC pattern in use!
  * Displays the Map for the User by retrieving data from its Model.
@@ -18,7 +17,8 @@ public class MapView extends JPanel
     private static MapView _instance = null;
     // Gets the object of its model
     private MapModel _model;
-    private MapModel.Chip[][] chips;
+    private MapModel.Chip[][] _chips;
+    private JButton[][] _mapButtons;
 
     public static final Color CHIP_NONE = Color.WHITE;
     public static final Color CHIP_RED = Color.RED;
@@ -28,8 +28,8 @@ public class MapView extends JPanel
 
     private MapView()
     {
-        // 7x7 for a default grid
-        super(new GridLayout(7, 7));
+        super(new GridLayout());
+        _chips = _model.getGameBoard();
         setBackground(Color.black);
     }
     public void linkModel(MapModel mapModel)
@@ -50,9 +50,9 @@ public class MapView extends JPanel
     {
         
     }
-    public void drawBoard() throws TooManyPlayersException
+    public void drawBoard() throws InvalidPlayerAmountException
     {
-        chips = _model.getGameBoard();
+        _mapButtons = new JButton[_chips.length][_chips[0].length];
         for (int r = 0; r < _model.getRows(); r++)
         {
             for (int c = 0; c < _model.getCols(); c++)
@@ -65,7 +65,7 @@ public class MapView extends JPanel
                         break;
                     // more cases to be implemented
                     default:
-                        throw new TooManyPlayersException(_model.getPlayerCount(), _model);
+                        throw new InvalidPlayerAmountException(_model);
                 }
             }
         }

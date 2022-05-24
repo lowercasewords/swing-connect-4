@@ -57,60 +57,58 @@ public class Settings extends JPanel
         _soundButton.addItemListener(itemEvent  -> {
             int state = itemEvent.getStateChange();
             if(itemEvent.SELECTED == state) {
-                _musicButton.setText("Music: on");
+                _musicButton.setText("Sound: on");
             }
             else
             {
-                _musicButton.setText("Music: off");
+                _musicButton.setText("Sound: off");
             }
         });
         _askPlayerCount.addKeyListener(new KeyListener() {
-            
             @Override
             public void keyPressed(KeyEvent e) {
                 // TODO Auto-generated method stub
                 String value = _askPlayerCount.getText();
                 int l = value.length();
-                if (e.getKeyChar() > '0' && e.getKeyChar() <= '4') {
+                if (e.getKeyChar() > '0' && e.getKeyChar() <= _mapController.getMapModel) {
                     _askPlayerCount.setEditable(true);
                 } else {
                     _askPlayerCount.setEditable(false);
                 }
             }
             @Override
-            public void keyTyped(KeyEvent e) {
-                // TODO Auto-generated method stub
-            }
+            public void keyTyped(KeyEvent e) {}
             @Override
-            public void keyReleased(KeyEvent e) {
-                // TODO Auto-generated method stub
-                
-            }
+            public void keyReleased(KeyEvent e) {}
          });
-         _askPlayerCount.addKeyListener(new KeyListener() 
-         {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                // TODO Auto-generated method stub
-                
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                // TODO Auto-generated method stub
-                
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                // TODO Auto-generated method stub
-                
-            }
+        //  _askRowCount.addKeyListener(new KeyListener() {
+        //      @Override
+        //      public void keyPressed(KeyEvent e) {
+        //         String value = _askPlayerCount.getText();
+        //         int l = value.length();
+        //         if (e.getKeyChar() > '0' && e.getKeyChar() <= '4') {
+        //             _askPlayerCount.setEditable(true);
+        //         } else {
+        //             _askPlayerCount.setEditable(false);
+        //         }
+        //      }
+        //      @Override
+        //      public void keyTyped(KeyEvent e) {}
+ 
+        //     @Override
+        //     public void keyReleased(KeyEvent e) {}
              
-         });
+        //  });
         _startSessionButton.addActionListener(x -> {
             _startSessionButton.setText(RESTART_SIGN);
-            // _mapController.startSession(playerCount, rows, cols);
-        });
+            try {
+                int playerCount = Integer.parseInt(_askPlayerCount.getText());
+                int rows = Integer.parseInt(_askRowCount.getText());
+                int cols = Integer.parseInt(_askColCount.getText());
+                _mapController.startSession(playerCount, rows, cols);
+            } catch (Exception e) {
+                //TODO: handle exception
+            }
+        }); 
     }
 }
