@@ -152,6 +152,43 @@ public class MapModel
             } 
             // diagonal back slash
           case 2:
+           con = 0;
+            tempCol = col;
+            tempRow = row;
+            while(true)
+            {
+              while(con < WIN_CONNECTIONS)
+              {
+                if (_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
+                {
+                  con++;
+                }
+                else
+                {
+                  break;
+                }
+                tempRow++;
+              }
+
+              tempRow = row - 1;
+              while(con < WIN_CONNECTIONS)
+              {
+                if (_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
+                {
+                  con++;
+                }
+                else
+                {
+                  break;
+                }
+                tempRow--;
+              }
+              if (con >= 4)
+              {
+                return true;
+              }
+              break;
+            } 
           break;
             // diagonal forward slash
           case 3:

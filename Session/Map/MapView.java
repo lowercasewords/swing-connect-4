@@ -57,7 +57,7 @@ public class MapView extends JPanel
         {
             for (int c = 0; c < _model.getCols(); c++)
             {
-                Chip chip = chips[r][c];
+                Chip chip = _chips[r][c];
                 switch(chip)
                 {
                     case null:
