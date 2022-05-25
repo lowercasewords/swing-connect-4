@@ -58,7 +58,7 @@ public class MapModel
    * @return was the placement of the chip successful (e.g false if trying to put chip off the board)
    * @throws IndexOutOfBoundsException when try accessing a non-existing column
    */
-  public boolean placeChip(int col) throws IndexOutOfBoundsException
+  public boolean placeChip(int col)
   {
     //places chip at index of col.
     int row = 0;
@@ -70,43 +70,41 @@ public class MapModel
         row = i;
       }
     }
-    // check for connect-4 4 times
-    for(int i = 0; i < 4; i++)
+    // check for connect-_winConnections _winConnections times
+    for(int i = 0; i < _winConnections; i++)
     {
-      // number of connections (max = 4)
+      // number of connections (max = _winConnections)
       int con = 0;
-      try {
+      int tempCol = 0;
+      int tempRow = 0;
+      
         switch(i)
         {
-            //horizontal
+            //n 
+            //horizontal 
           case 0:
-            int tempCol = col;
-            while(con < WIN_CONNECTIONS)
+            con = 0;
+            tempCol = col;
+            // right
+            while(con < _winConnections)
             {
-              if (_gameBoard[row][tempCol].getTurn() == Chip.getTurnCounter())
+              try 
               {
-                con++;
-              }
-              else
-              {
-                break;
-              }
-              tempCol++;  
+                _gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter() ? con++ :break;
+                tempCol++;
+              } catch (IndexOutOfBoundsException ex) { break; }
             }
             tempCol = col-1;
-            while(con < WIN_CONNECTIONS)
+            // left
+            while(con < _winConnections)
             {
-              if (_gameBoard[row][tempCol].getTurn() == Chip.getTurnCounter())
+              try 
               {
-                con++;
-              }
-              else
-              {
-                break;
-              }
-              tempCol--;
+                _gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter() ? con++ :break;
+                tempCol--;
+              } catch (IndexOutOfBoundsException ex) { break; }
             }
-            if (con >= 4)
+            if (con >= _winConnections)
             {
               return true;
             }
@@ -115,94 +113,103 @@ public class MapModel
           case 1: 
             con = 0;
             tempCol = col;
-            int tempRow = row;
-            while(true)
+            tempRow = row;
+            //up
+            while(con < _winConnections)
             {
-              while(con < WIN_CONNECTIONS)
-              {
-                if (_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
-                {
-                  con++;
-                }
-                else
-                {
-                  break;
-                }
+              try 
+              { 
+                _gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter() ? con++ :break;
                 tempRow++;
-              }
-
-              tempRow = row - 1;
-              while(con < WIN_CONNECTIONS)
+              } catch (IndexOutOfBoundsException ex) { break; }
+            }
+            
+            tempRow = row - 1;
+            // down
+            while(con < _winConnections)
+            {
+              try
               {
-                if (_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
-                {
-                  con++;
-                }
-                else
-                {
-                  break;
-                }
+                _gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter() ? con++ :break;
                 tempRow--;
-              }
-              if (con >= 4)
-              {
-                return true;
-              }
-              break;
-            } 
-            // diagonal back slash
+              } catch (IndexOutOfBoundsException ex) { break; }
+            }
+            if (con >= _winConnections)
+            {
+              return true;
+            }
+            break; 
+            // diagonal back slash (\)
           case 2:
-           con = 0;
+            con = 0;
             tempCol = col;
             tempRow = row;
-            while(true)
+            // ascending (left + up)
+            while(con < _winConnections)
             {
-              while(con < WIN_CONNECTIONS)
-              {
-                if (_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
-                {
-                  con++;
-                }
-                else
-                {
-                  break;
-                }
+              try 
+              { 
+                _gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter() ? con++ :break;
+                tempCol--;
                 tempRow++;
-              }
+              } catch (IndexOutOfBoundsException ex) { break; }
+            }
 
-              tempRow = row - 1;
-              while(con < WIN_CONNECTIONS)
-              {
-                if (_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
-                {
-                  con++;
-                }
-                else
-                {
-                  break;
-                }
-                tempRow--;
-              }
-              if (con >= 4)
-              {
-                return true;
-              }
-              break;
-            } 
+            tempCol = col + 1;
+            tempRow = row - 1;
+            // descending (right + down)
+            while(con < _winConnections)
+            {
+              try 
+              { 
+                _gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter() ? con++ :break;
+                tempCol--;
+                tempRow++;
+              } catch (IndexOutOfBoundsException ex) { break; }
+            }
+            if (con >= _winConnections)
+            {
+              return true;
+            }
           break;
-            // diagonal forward slash
+            // diagonal forward slash (/)
           case 3:
+            con = 0;
+            tempCol = col;
+            tempRow = row;
+            // ascending (right + up)
+            while(con < _winConnections)
+            {
+              try 
+              { 
+                _gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter() ? con++ :break;
+                tempCol++;
+                tempRow++;
+              } catch (IndexOutOfBoundsException ex) { break; }
+            }
             
+            tempCol = col - 1;
+            tempRow = row - 1;
+            // descending (left + down)
+            while(con < _winConnections)
+            {
+              try 
+              { 
+                _gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter() ? con++ :break;
+                tempCol--;
+                tempRow--;
+              } catch (IndexOutOfBoundsException ex) { break; }
+            }
+            if (con >= _winConnections)
+            {
+              return true;
+            }
           break;
           default:
             throw new IndexOutOfBoundsException();
         }
-      } catch (IndexOutOfBoundsException ex)
-      {
-       
-      }
     }
-    return false;  
+    return false;
   }
 
   public class Chip
