@@ -19,10 +19,12 @@ public class Main {
     
     public static void main (String[] args) 
     {
-        _window.setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH));
-        _window.setPreferredSize(new Dimension(2048, 2048));
-        _window.setVisible(true);
-        _window.setLayout(new BorderLayout());
-        
+      System.out.println("something");
+        // _window.setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH));
+        // _window.setPreferredSize(new Dimension(2048, 2048));
+        // _window.setVisible(true);
+        // _window.setLayout(new BorderLayout());
+
+      Session.Map.MapModel connectFour = new Session.Map.MapModel();
     }
 }

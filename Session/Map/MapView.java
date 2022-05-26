@@ -13,9 +13,7 @@ import Exceptions.InvalidPlayerAmountException;
  */
 public class MapView extends JPanel
 {
-    // Provides Singleton
-    private static MapView _instance = null;
-    // Gets the object of its model
+    // Gets the o bject of its model
     private MapModel _model;
     private MapModel.Chip[][] _chips;
     private JButton[][] _mapButtons;
@@ -26,7 +24,7 @@ public class MapView extends JPanel
     public static final Color CHIP_GREEN = Color.GREEN;
     public static final Color CHIP_CYAN = Color.CYAN;
 
-    private MapView()
+    public MapView()
     {
         super(new GridLayout());
         _chips = _model.getGameBoard();
@@ -36,20 +34,7 @@ public class MapView extends JPanel
     {
         _model = mapModel;
     }
-    public static MapView getInstance()
-    {
-        if(_instance == null)
-        {
-            _instance = new MapView();
-        }
-        return _instance;
-    }
     
-    @Deprecated
-    private void clearBoard()
-    {
-        
-    }
     public void drawBoard() throws InvalidPlayerAmountException
     {
         _mapButtons = new JButton[_chips.length][_chips[0].length];
@@ -58,16 +43,15 @@ public class MapView extends JPanel
             for (int c = 0; c < _model.getCols(); c++)
             {
                 Chip chip = _chips[r][c];
-                switch(chip)
-                {
-                    case null:
-                        ((JToggleButton)chip).setForeground(CHIP_NONE);
-                        break;
-                    // more cases to be implemented
-                    default:
-                        throw new InvalidPlayerAmountException(_model);
+                // switch(chip)
+                // {
+                    // case null:
+                    //     ((JToggleButton)chip).setForeground(CHIP_NONE);
+                    //     break;
+                    // // more cases to be implemented
+                    // default:
+                    //     throw new InvalidPlayerAmountException(_model);
                 }
             }
         }
     }
-}

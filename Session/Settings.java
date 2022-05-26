@@ -6,8 +6,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import Session.Map.MapController;
-
+import Session.Map.*;
 /**
  * Configures the upcoming session (e.g. player count, map size, sound and music)
  */
@@ -34,7 +33,7 @@ public class Settings extends JPanel
     public Settings(MapController mapController)
     {
         super(new FlowLayout(FlowLayout.TRAILING));
-
+        _mapController = new MapController(new MapView(), new MapModel());
         // adding buttons to Settings Panel
         this.add(_startSessionButton);
         this.add(_musicButton);
@@ -64,17 +63,13 @@ public class Settings extends JPanel
                 _musicButton.setText("Sound: off");
             }
         });
+      
         _askPlayerCount.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent e) {
                 // TODO Auto-generated method stub
                 String value = _askPlayerCount.getText();
                 int l = value.length();
-                if (e.getKeyChar() > '0' && e.getKeyChar() <= _mapController.getMapModel) {
-                    _askPlayerCount.setEditable(true);
-                } else {
-                    _askPlayerCount.setEditable(false);
-                }
             }
             @Override
             public void keyTyped(KeyEvent e) {}
