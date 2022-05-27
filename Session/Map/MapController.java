@@ -32,7 +32,17 @@ public class MapController
     public void startSession(int playerCount, int rows, int cols) throws InvalidPlayerAmountException
     {
         _model.startSession(playerCount, rows, cols);
-        _view.drawBoard();;
+        _view.visualizeBoard();
     }
 
+    /**
+     * 
+     * @param col
+     * @throws InvalidPlayerAmountException
+     */
+    public void makeMove(int col) throws InvalidPlayerAmountException
+    {
+        int playerTurn = _model.placeChip(col);
+        switch
+    }
 }

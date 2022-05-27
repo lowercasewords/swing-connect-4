@@ -33,6 +33,13 @@ public class MapModel
   public Chip[][] getGameBoard() { return _gameBoard; }
   public Chip getChip(int row, int col) { return _gameBoard[row][col]; }
   
+  /**
+   * Prepares the board logic 
+   * @param playerCount player count for current session
+   * @param rows amount of rows for a current session
+   * @param cols amount of cols for a current session
+   * @throws InvalidPlayerAmountException
+   */
   public void startSession(int playerCount, int rows, int cols) throws InvalidPlayerAmountException
   {
     _gameBoard = new Chip[rows][cols];
@@ -47,6 +54,9 @@ public class MapModel
     }
     System.out.println("The session has been started");
   }
+  /**
+   * Resets the logic
+   */
   public void endSession()
   {
     System.out.println("The session has ended");
@@ -73,7 +83,13 @@ public class MapModel
     return checkWinner(col, row);
   }
 
-  private int checkWinner(int col, int row)
+  /**
+   * Checks a chip in specified position has winning amount of connections
+   * @param row row of the chip
+   * @param col column of the chip
+   * @return winning turn counter (0 if chip haven't won)
+   */
+  private int checkWinner(int row, int col)
   {
     // check for connect-WIN_CONNECTIONS WIN_CONNECTIONS times
     for(int i = 0; i < WIN_CONNECTIONS; i++)
@@ -244,34 +260,43 @@ public class MapModel
 
   public class Chip
   {
-    // counting starts at zero 
-    private static int _turnCounter = 0;
-    private int _turn = _turnCounter;
-  
+    public static final int MAX_TURN_COUNTER = MAX_PLAYERS;
+    public static final int MIN_TURN_COUNTER = 1;
+    
+    /** *Kkeeps tracks of turns among all chips, a turn represents */
+    private static int _playerTurnCounter = MIN_TURN_COUNTER;
+    /** * Assigned player turn to the Chip Instance */
+    private int _playerTurn = _playerTurnCounter;
+
     /**
-     * Increments the turn counter, and then binds the the chip instance to the turn number
+     * binds the the chip instance to the turn number, then increments the turn counter
      */
     public Chip()
     {
-      if(_turnCounter > _playerCount) 
+      _playerTurn = _playerTurnCounter;
+      if(_playerTurnCounter > MAX_TURN_COUNTER) 
       {
-        _turnCounter = 1;
+         _playerTurnCounter = MIN_TURN_COUNTER; 
       } 
       else 
       {
-        _turnCounter++;
+         _playerTurnCounter++; 
       }
-      _turn = _turnCounter;
     }
 
-    public int getTurn()
+    /**
+     * @return a player turn associated with Chip instance (whose player the chip is)
+     */
+    public int getPlayerTurn()
     {
-      return _turn;
+      return _playerTurn;
     }  
-
-    public static int getTurnCounter()
+    /**
+     * @return an overall count player turns
+     */
+    public static int getPlayerTurnCounter()
     {
-      return _turnCounter;
+      return _playerTurnCounter;
     }
   }
 }

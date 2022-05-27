@@ -13,9 +13,11 @@ import Exceptions.InvalidPlayerAmountException;
  */
 public class MapView extends JPanel
 {
-    // Gets the o bject of its model
+    /** Stores the object of its model */
     private MapModel _model;
-    private MapModel.Chip[][] _chips;
+    /** Visualizes chips retrieved from the Model */
+    private Chip[][] _chips;
+    /** Visualization of buttons */
     private JButton[][] _mapButtons;
 
     public static final Color CHIP_NONE = Color.WHITE;
@@ -24,34 +26,60 @@ public class MapView extends JPanel
     public static final Color CHIP_GREEN = Color.GREEN;
     public static final Color CHIP_CYAN = Color.CYAN;
 
-    public MapView()
+    public Color backGroundColor = Color.BLACK;
+
+    public MapView(MapModel mapModel)
     {
         super(new GridLayout());
         _chips = _model.getGameBoard();
-        setBackground(Color.black);
-    }
-    public void linkModel(MapModel mapModel)
-    {
         _model = mapModel;
     }
     
-    public void drawBoard() throws InvalidPlayerAmountException
+    /**
+     * Creates the visual EMPTY board
+     * @throws InvalidPlayerAmountException
+     */
+    public void visualizeBoard()
     {
         _mapButtons = new JButton[_chips.length][_chips[0].length];
-        for (int r = 0; r < _model.getRows(); r++)
+        GridLayout gridLayout = (GridLayout)this.getLayout();
+        gridLayout.setRows(_chips.length);
+        gridLayout.setColumns(_chips[0].length);
+    }
+    /**
+     * 
+     */
+    public void updateSingleCol(int col)
+    {
+        for (int row = 0; row < _chips.length; row++) 
         {
-            for (int c = 0; c < _model.getCols(); c++)
+            switch(_chip[row][col])
             {
-                Chip chip = _chips[r][c];
-                // switch(chip)
-                // {
-                    // case null:
-                    //     ((JToggleButton)chip).setForeground(CHIP_NONE);
-                    //     break;
-                    // // more cases to be implemented
-                    // default:
-                    //     throw new InvalidPlayerAmountException(_model);
+                case value:
+                    
+                    break;
+            
+                default:
+                    break;
+            }
+        }
+    }
+    /**
+     * Updates the visuals of the board
+     */
+    public void updateWholeBoard()
+    {
+        for (int row = 0; row < _chips.length; row++) {
+            for (int col = 0; col < _chips[i].length; col++) {
+                switch (_chips[row][col].getPlayerTurn()) {
+                    case value:
+                        
+                        break;
+                
+                    default:
+                        break;
                 }
             }
         }
     }
+}
