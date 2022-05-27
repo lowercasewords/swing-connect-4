@@ -4,7 +4,7 @@ import javax.management.modelmbean.ModelMBean;
 import javax.swing.*;
 import java.awt.*;
 
-import Session.Map.MapModel.Chip;
+import Session.Map.Chip;
 import Exceptions.InvalidPlayerAmountException;
 /**
  * MVC pattern in use!
