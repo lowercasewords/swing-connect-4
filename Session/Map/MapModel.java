@@ -65,7 +65,7 @@ public class MapModel
   /**
    * Places a chip in the boar
    * @param col in what column should chip be placed
-   * @return returns getTurnCounter() if a player who placed chip has won
+   * @return returns getPlayerTurnCounter() if a player who placed chip has won
    * @throws NullPointerException when try accessing a non-existing column
    */
   public int placeChip(int col)
@@ -111,7 +111,7 @@ public class MapModel
           {
             try 
             {
-              if(_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
               { con++; }
               else { break; }
               tempCol++;
@@ -125,7 +125,7 @@ public class MapModel
           {
             try 
             {
-              if(_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
               { con++; }
               else { break; }
               tempCol--;
@@ -134,7 +134,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            return Chip.getTurnCounter();
+            return Chip.getPlayerTurnCounter();
           }
           break;
           // vertical
@@ -147,7 +147,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
               { con++; }
               else { break; }
               tempRow++;
@@ -161,7 +161,7 @@ public class MapModel
           {
             try
             {
-              if(_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
               { con++; }
               else { break; }
               tempRow--;
@@ -170,7 +170,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            return Chip.getTurnCounter();
+            return Chip.getPlayerTurnCounter();
           }
           break; 
           // diagonal back slash (\)
@@ -183,7 +183,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
               { con++; }
               else { break; }
               tempCol--;
@@ -199,7 +199,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
               { con++; }
               else { break; }
               tempCol--;
@@ -209,7 +209,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            return Chip.getTurnCounter();
+            return Chip.getPlayerTurnCounter();
           }
         break;
           // diagonal forward slash (/)
@@ -222,7 +222,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
               { con++; }
               else { break; }
               tempCol++;
@@ -238,7 +238,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getTurn() == Chip.getTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
               { con++; }
               else { break; }
               tempCol--;
@@ -248,7 +248,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            return Chip.getTurnCounter();
+            return Chip.getPlayerTurnCounter();
           }
         break;
         default:
