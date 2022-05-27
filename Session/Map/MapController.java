@@ -11,13 +11,13 @@ public class MapController
     private MapView _view;
     private MapModel _model;
 
-    public MapController(MapView view, MapModel model)
+    public MapController(MapView view)
     {
         this._view = view;
-        this._model = model;
-
-        view.linkModel(model);
+        this._model = view.getModel();
+        // this._model = model;
     }
+    
     public int getMaxPlayers() {return _model.MAX_PLAYERS; }
     public int getMaxRows() {return _model.MAX_ROWS; }
     public int getMaxCols() {return _model.MAX_COLS; }
@@ -43,6 +43,6 @@ public class MapController
     public void makeMove(int col) throws InvalidPlayerAmountException
     {
         int playerTurn = _model.placeChip(col);
-        switch
+        // switch
     }
 }

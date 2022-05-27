@@ -35,6 +35,10 @@ public class MapView extends JPanel
         _model = mapModel;
     }
     
+    public MapModel getModel()
+    {
+        return _model;
+    }
     /**
      * Creates the visual EMPTY board
      * @throws InvalidPlayerAmountException
@@ -53,15 +57,15 @@ public class MapView extends JPanel
     {
         for (int row = 0; row < _chips.length; row++) 
         {
-            switch(_chip[row][col])
-            {
-                case value:
+            // switch(_chip[row][col])
+            // {
+            //     case value:
                     
-                    break;
+            //         break;
             
-                default:
-                    break;
-            }
+            //     default:
+            //         break;
+            // }
         }
     }
     /**
@@ -70,15 +74,15 @@ public class MapView extends JPanel
     public void updateWholeBoard()
     {
         for (int row = 0; row < _chips.length; row++) {
-            for (int col = 0; col < _chips[i].length; col++) {
-                switch (_chips[row][col].getPlayerTurn()) {
-                    case value:
+            for (int col = 0; col < _chips[row].length; col++) {
+                // switch (_chips[row][col].getPlayerTurn()) {
+                //     case value:
                         
-                        break;
+                //         break;
                 
-                    default:
-                        break;
-                }
+                //     default:
+                //         break;
+                // }
             }
         }
     }

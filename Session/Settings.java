@@ -33,7 +33,7 @@ public class Settings extends JPanel
     public Settings(MapController mapController)
     {
         super(new FlowLayout(FlowLayout.TRAILING));
-        _mapController = new MapController(new MapView(), new MapModel());
+        _mapController = new MapController(new MapView(new MapModel()));
         // adding buttons to Settings Panel
         this.add(_startSessionButton);
         this.add(_musicButton);
