@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.function.Consumer;
 import java.util.Set;
 import Exceptions.InvalidPlayerAmountException;
+import Exceptions.InvalidPlayerWonReasonException;
+import Exceptions.UnimplementedException;
 import Session.GameOverInfoArgs;
 /**
  * MVC Pattern in use!
@@ -12,7 +14,7 @@ import Session.GameOverInfoArgs;
 */
 public class MapModel 
 {
-  /** Container of chips on the logical game board */
+  /** Container of chips on the game board */
   private Chip[][] _gameBoard;
   private int _playerCount;
   /** Number of rows in the game board */
@@ -42,7 +44,7 @@ public class MapModel
   public void gameOverNotify(GameOverInfoArgs args) 
   { listeners.forEach(x -> x.accept(args)); }
 
-  // Get / Set <ethods
+  // Get / Set methods
   public int getPlayerCount() { return _playerCount; }
   public int getRows() { return _rows; }
   public int getCols() { return _cols; }
@@ -65,7 +67,6 @@ public class MapModel
     /** Executes automatically on button click, tries to place a chip in correct place */
     @Override
     public void itemStateChanged(ItemEvent e){
-      
     }
   }
 
@@ -76,7 +77,7 @@ public class MapModel
    * @param cols amount of cols for a current session
    * @throws InvalidPlayerAmountException
    */
-  public void startSession(int playerCount, int rows, int cols) throws InvalidPlayerAmountException
+  public void startSession(int playerCount, int rows, int cols) throws InvalidPlayerAmountException, UnimplementedException
   {
     // creates an empty Chip board array
     _gameBoard = new Chip[rows][cols];
@@ -98,7 +99,7 @@ public class MapModel
             _mapButtons[row][col] = new JButton();
             final int buttonCol = col;
             _mapButtons[row][col].addItemListener(new ButtonListener(_mapButtons[row][col], row, col));
-            
+            throw new UnimplementedException();
         }
     }
     // DEGUG LOG:
@@ -113,35 +114,45 @@ public class MapModel
     }
     System.out.println("The session has ended");
   }
-
-  /**
-   * Places a chip in the board and checks for winner afterwards
-   * @param col in what column should chip be placed
-   * @return returns a Player Turn of the player who won, returns 0 otherwise
-   * @throws NullPointerException when try accessing a non-existing column
-   */
-  public int placeChip(int col) throws NullPointerException
+  /** Notifies Event Listeners if the board is full with 'No Free Space' reason. <b>Doesn't decide the winner!</b>*/
+  private void isBoardFull() throws InvalidPlayerWonReasonException
   {
-    //places chip at index of col.
-    int row = 0;
-    for (int i = 0; i > _gameBoard.length; i++)
-    {
-      if (_gameBoard[i][col] != null)
-      {
-        _gameBoard[i][col] = new Chip();
-        row = i;
+    for (int row = 0; row < _gameBoard.length; row++) {
+      for (int col = 0; col < _gameBoard[row].length; col++) {
+        if(_gameBoard[row][col] != null)
+        {
+          return;
+        }
       }
     }
-    return checkWinner(col, row);
+    gameOverNotify(new GameOverInfoArgs(GameOverInfoArgs.NO_FREE_SPACE));
+  }
+  /**
+   * Places a chip in the board, then checks for winner afterwards, then checks if the board is full. 
+   * Notifies the Event Listeners if the game is over by the reasons listed before.
+   * @param col in what column should chip be placed with the lowest possible row
+   * @throws NullPointerException when try accessing a non-existing column
+   * @throws InvalidPlayerWonReasonException 
+  */
+  public void placeChip(int col) throws NullPointerException, InvalidPlayerWonReasonException
+  {
+    int row = 0;
+    for (; row < _gameBoard.length; row++){
+      if (_gameBoard[row][col] != null){
+        _gameBoard[row][col] = new Chip();
+        break;
+      }
+    }
+    checkWinner(col, row);
+    isBoardFull();
   }
 
   /**
-   * Checks a chip in specified position has winning amount of connections
+   * Checks for a winner. Alerts Event Listeners if the winner was decided
    * @param row row of the chip
    * @param col column of the chip
-   * @return winning turn counter (0 if chip haven't won)
    */
-  private int checkWinner(int row, int col)
+  private void checkWinner(int row, int col)
   {
     // check for connect-WIN_CONNECTIONS WIN_CONNECTIONS times
     for(int i = 0; i < WIN_CONNECTIONS; i++)
@@ -185,7 +196,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            return Chip.getPlayerTurnCounter();
+            gameOverNotify(new GameOverInfoArgs(Chip.getPlayerTurnCounter()));
           }
             break;
           // vertical
@@ -221,7 +232,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            return Chip.getPlayerTurnCounter();
+            gameOverNotify(new GameOverInfoArgs(Chip.getPlayerTurnCounter()));
           }
             break; 
           // diagonal back slash (\)
@@ -260,7 +271,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            return Chip.getPlayerTurnCounter();
+            gameOverNotify(new GameOverInfoArgs(Chip.getPlayerTurnCounter()));
           }
            break;
           // diagonal forward slash (/)
@@ -299,13 +310,12 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            return Chip.getPlayerTurnCounter();
+            gameOverNotify(new GameOverInfoArgs(Chip.getPlayerTurnCounter()));
           }
           break;
         default:
           throw new NullPointerException();
       }
     }
-    return 0;
   }
 }
