@@ -5,15 +5,19 @@ import java.util.HashSet;
 import java.util.function.Consumer;
 import java.util.Set;
 import Exceptions.InvalidPlayerAmountException;
+import Session.GameOverInfoArgs;
 /**
  * MVC Pattern in use!
  * Talks to the database to retrieve the overal scores
 */
-public class MapModel
+public class MapModel 
 {
+  /** Container of chips on the logical game board */
   private Chip[][] _gameBoard;
   private int _playerCount;
+  /** Number of rows in the game board */
   private int _rows;
+  /** Number of columns in the game board */
   private int _cols;
   /** Visualization of buttons (the ones you click to summon a chip)*/
   private JButton[][] _mapButtons;
@@ -26,15 +30,19 @@ public class MapModel
   public static final int MAX_COLS = 14;
   public static final int MIN_COLS = 7;
 
-  private Set<Consumer<EventArgs>> listeners = new HashSet();
-  public class EventArgs {}
-  public void addListener(Consumer<EventArgs> listener)
-  { listeners.add(listener); }
-  public void broadcast(EventArgs args)
-  {
-    listeners.forEach(x -> x.accept(args));
-  }
+  /** Collection of Event Listeners (all classes that listen to specific event in this class).
+   *  If the game comes to an end, all listeners would be notified and called upon */
+  private Set<Consumer<GameOverInfoArgs>> listeners = new HashSet();
 
+  /** Call to add an Event Listener*/
+  public void addListener(Consumer<GameOverInfoArgs> listener)
+  { listeners.add(listener); }
+
+  /** Invokes the <b>accept method</b> in listeners*/
+  public void gameOverNotify(GameOverInfoArgs args) 
+  { listeners.forEach(x -> x.accept(args)); }
+
+  // Get / Set <ethods
   public int getPlayerCount() { return _playerCount; }
   public int getRows() { return _rows; }
   public int getCols() { return _cols; }
@@ -54,7 +62,7 @@ public class MapModel
       this._col = col;
       
     }
-    /** Executes automatically on button click */
+    /** Executes automatically on button click, tries to place a chip in correct place */
     @Override
     public void itemStateChanged(ItemEvent e){
       
@@ -62,7 +70,7 @@ public class MapModel
   }
 
   /**
-   * Prepares the board logic 
+   * Prepares the board logic and sets players up
    * @param playerCount player count for current session
    * @param rows amount of rows for a current session
    * @param cols amount of cols for a current session
@@ -74,21 +82,19 @@ public class MapModel
     _gameBoard = new Chip[rows][cols];
 
     // ensures correct number of players 
-    if(playerCount > MAX_PLAYERS) 
-    {
-      _playerCount = playerCount;
+    if
+    (
+      playerCount > MAX_PLAYERS)  { _playerCount = playerCount; 
     }  
     else
     {
       // raises the exception, passing current model instance as an argument
-      throw new InvalidPlayerAmountException(this);
+      throw new InvalidPlayerAmountException(playerCount);
     }
     // creates map buttons with functionallity
     _mapButtons = new JButton[rows][cols];
-    for (int row = 0; row < rows; row++)
-    {
-        for (int col = 0; col < cols; col++)
-        {
+    for (int row = 0; row < rows; row++){
+        for (int col = 0; col < cols; col++){
             _mapButtons[row][col] = new JButton();
             final int buttonCol = col;
             _mapButtons[row][col].addItemListener(new ButtonListener(_mapButtons[row][col], row, col));
@@ -98,13 +104,12 @@ public class MapModel
     // DEGUG LOG:
     System.out.println("The session has been started");
   }
-  /**
-   * Destroyes the board
-   */
-  public void endSession() throws Exception
-  {
+  /** Destroyes the Chip Board board */
+  public void destroyBoard() {
     for (int row = 0; row < _gameBoard.length; row++) {
-      _gameBoard[row] = null;
+      for (int col = 0; col < _gameBoard.length; col++) {
+        _gameBoard[row][col] = null; 
+      }
     }
     System.out.println("The session has ended");
   }
@@ -148,7 +153,6 @@ public class MapModel
       
       switch(i)
       {
-        //n 
         //horizontal 
         case 0:
           con = 0;
@@ -183,9 +187,9 @@ public class MapModel
           {
             return Chip.getPlayerTurnCounter();
           }
-          break;
+            break;
           // vertical
-        case 1: 
+           case 1: 
           con = 0;
           tempCol = col;
           tempRow = row;
@@ -219,9 +223,9 @@ public class MapModel
           {
             return Chip.getPlayerTurnCounter();
           }
-          break; 
+            break; 
           // diagonal back slash (\)
-        case 2:
+          case 2:
           con = 0;
           tempCol = col;
           tempRow = row;
@@ -258,9 +262,9 @@ public class MapModel
           {
             return Chip.getPlayerTurnCounter();
           }
-        break;
+           break;
           // diagonal forward slash (/)
-        case 3:
+            case 3:
           con = 0;
           tempCol = col;
           tempRow = row;
@@ -297,7 +301,7 @@ public class MapModel
           {
             return Chip.getPlayerTurnCounter();
           }
-        break;
+          break;
         default:
           throw new NullPointerException();
       }
