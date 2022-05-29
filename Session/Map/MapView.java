@@ -1,77 +1,60 @@
 package Session.Map;
-
-import javax.management.modelmbean.ModelMBean;
 import javax.swing.*;
 import java.awt.*;
-
-import Session.Map.Chip;
 import Exceptions.InvalidPlayerAmountException;
 /**
  * MVC pattern in use!
  * Displays the Map for the User by retrieving data from its Model.
- *  Class is handled by its Controller 
+ * Class is handled by its Controller. <b>Extends JPanel</b>
  */
 public class MapView extends JPanel
 {
     /** Stores the object of its model */
     private MapModel _model;
-    /** Visualizes chips retrieved from the Model */
+    /** Retrieves chips from the Model */
     private Chip[][] _chips;
-    /** Visualization of buttons */
-    private JButton[][] _mapButtons;
+    /** Is used to configure grd layout settings (amount of rows, columns, size, e.g.) */
+    private GridLayout _gridLayout;
+    /** Background color of View JPanel */
+    public Color _backGroundColor = Color.BLACK;
 
-    public static final Color CHIP_NONE = Color.WHITE;
-    public static final Color CHIP_RED = Color.RED;
-    public static final Color CHIP_YELLOW = Color.YELLOW;
-    public static final Color CHIP_GREEN = Color.GREEN;
-    public static final Color CHIP_CYAN = Color.CYAN;
 
-    public Color backGroundColor = Color.BLACK;
-
+    /** Creates a Map View that extends from JPanel with grid Layout */
     public MapView(MapModel mapModel)
     {
         super(new GridLayout());
         _chips = _model.getGameBoard();
         _model = mapModel;
+        _gridLayout = (GridLayout)this.getLayout();
     }
+    /** @return the model instance of the view */
+    public MapModel getModel() { return _model; }
     
-    public MapModel getModel()
-    {
-        return _model;
-    }
     /**
-     * Creates the visual EMPTY board
+     * Creates the visuals of the board
      * @throws InvalidPlayerAmountException
      */
     public void visualizeBoard()
     {
-        _mapButtons = new JButton[_chips.length][_chips[0].length];
-        GridLayout gridLayout = (GridLayout)this.getLayout();
-        gridLayout.setRows(_chips.length);
-        gridLayout.setColumns(_chips[0].length);
+        // changes the grid layout settings of the View
+        _gridLayout.setRows(_chips.length);
+        _gridLayout.setColumns(_chips[0].length);
     }
+
     /**
-     * 
+     * Updates the column of the board according to model
+     * @param col A column to be updated
      */
-    public void updateSingleCol(int col)
+    public void updateSingleCol(int col) throws Exception
     {
         for (int row = 0; row < _chips.length; row++) 
         {
-            // switch(_chip[row][col])
-            // {
-            //     case value:
-                    
-            //         break;
-            
-            //     default:
-            //         break;
-            // }
+        //    _chips[row][col].setSize(, 20);
         }
+        throw new Exception("Not implemented yet!");
     }
-    /**
-     * Updates the visuals of the board
-     */
-    public void updateWholeBoard()
+    /*** Updates the visuals of the board */ 
+    public void updateWholeBoard() throws Exception
     {
         for (int row = 0; row < _chips.length; row++) {
             for (int col = 0; col < _chips[row].length; col++) {
@@ -85,5 +68,6 @@ public class MapView extends JPanel
                 // }
             }
         }
+        throw new Exception("Not implemented yet!");
     }
 }

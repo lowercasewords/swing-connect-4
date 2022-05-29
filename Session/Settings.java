@@ -1,6 +1,5 @@
 package Session;
 
-import javax.crypto.KeyAgreement;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -104,6 +103,7 @@ public class Settings extends JPanel
             } catch (Exception e) {
                 //TODO: handle exception
             }
+            
         }); 
     }
 }

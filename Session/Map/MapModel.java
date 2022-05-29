@@ -1,8 +1,9 @@
 package Session.Map;
-
-import javax.swing.JToggleButton;
+import java.awt.event.*;
 import javax.swing.*;
-import Session.Map.Chip;
+import java.util.HashSet;
+import java.util.function.Consumer;
+import java.util.Set;
 import Exceptions.InvalidPlayerAmountException;
 /**
  * MVC Pattern in use!
@@ -14,25 +15,52 @@ public class MapModel
   private int _playerCount;
   private int _rows;
   private int _cols;
+  /** Visualization of buttons (the ones you click to summon a chip)*/
+  private JButton[][] _mapButtons;
 
   public static final int WIN_CONNECTIONS = 4;
-
   public static final int MAX_PLAYERS = 4;
-  public static final int MAX_ROWS = 14;
-  public static final int MAX_COLS = 14;
-
   public static final int MIN_PLAYERS = 2;
+  public static final int MAX_ROWS = 14;
   public static final int MIN_ROWS = 7;
+  public static final int MAX_COLS = 14;
   public static final int MIN_COLS = 7;
 
-  // Ensuring SingleTon Pattern
-  
+  private Set<Consumer<EventArgs>> listeners = new HashSet();
+  public class EventArgs {}
+  public void addListener(Consumer<EventArgs> listener)
+  { listeners.add(listener); }
+  public void broadcast(EventArgs args)
+  {
+    listeners.forEach(x -> x.accept(args));
+  }
+
   public int getPlayerCount() { return _playerCount; }
   public int getRows() { return _rows; }
   public int getCols() { return _cols; }
   public Chip[][] getGameBoard() { return _gameBoard; }
   public Chip getChip(int row, int col) { return _gameBoard[row][col]; }
   
+  /** Provides the instructions for the map buttons */ 
+  private class ButtonListener implements ItemListener 
+  {
+    private final int _row;
+    private final int _col;
+    private final JButton _jButton;
+    public ButtonListener(JButton jButton, int row, int col)
+    {
+      this._jButton = jButton;
+      this._row = row;
+      this._col = col;
+      
+    }
+    /** Executes automatically on button click */
+    @Override
+    public void itemStateChanged(ItemEvent e){
+      
+    }
+  }
+
   /**
    * Prepares the board logic 
    * @param playerCount player count for current session
@@ -42,7 +70,10 @@ public class MapModel
    */
   public void startSession(int playerCount, int rows, int cols) throws InvalidPlayerAmountException
   {
+    // creates an empty Chip board array
     _gameBoard = new Chip[rows][cols];
+
+    // ensures correct number of players 
     if(playerCount > MAX_PLAYERS) 
     {
       _playerCount = playerCount;
@@ -52,23 +83,39 @@ public class MapModel
       // raises the exception, passing current model instance as an argument
       throw new InvalidPlayerAmountException(this);
     }
+    // creates map buttons with functionallity
+    _mapButtons = new JButton[rows][cols];
+    for (int row = 0; row < rows; row++)
+    {
+        for (int col = 0; col < cols; col++)
+        {
+            _mapButtons[row][col] = new JButton();
+            final int buttonCol = col;
+            _mapButtons[row][col].addItemListener(new ButtonListener(_mapButtons[row][col], row, col));
+            
+        }
+    }
+    // DEGUG LOG:
     System.out.println("The session has been started");
   }
   /**
-   * Resets the logic
+   * Destroyes the board
    */
-  public void endSession()
+  public void endSession() throws Exception
   {
+    for (int row = 0; row < _gameBoard.length; row++) {
+      _gameBoard[row] = null;
+    }
     System.out.println("The session has ended");
   }
 
   /**
-   * Places a chip in the boar
+   * Places a chip in the board and checks for winner afterwards
    * @param col in what column should chip be placed
-   * @return returns getPlayerTurnCounter() if a player who placed chip has won
+   * @return returns a Player Turn of the player who won, returns 0 otherwise
    * @throws NullPointerException when try accessing a non-existing column
    */
-  public int placeChip(int col)
+  public int placeChip(int col) throws NullPointerException
   {
     //places chip at index of col.
     int row = 0;
