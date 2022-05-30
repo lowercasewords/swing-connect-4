@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 
 import Session.Map.*;
 /**
+ * Doesn't follow MVC pattern
  * Configures the upcoming session (e.g. player count, map size, sound and music)
  */
 public class Settings extends JPanel

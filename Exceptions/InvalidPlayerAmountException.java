@@ -1,16 +1,13 @@
 package Exceptions;
-import Session.Map.*;
+import Session.Map.MapModel;
 public class InvalidPlayerAmountException extends Exception{
-    /**
-     * Creates InvalidPlayerAmountException object
-     * @param mapModel 
-     */
-    public InvalidPlayerAmountException(MapModel mapModel)
+    /** Creates InvalidPlayerAmountException object*/
+    public InvalidPlayerAmountException(int playerCount)
     {
-        super(mapModel.getPlayerCount() + 
+        super(playerCount + 
         " is invalid amount of players for the session, should be more than " + 
-        mapModel.MIN_PLAYERS + 
+        MapModel.MIN_PLAYERS + 
         " and less than " + 
-        mapModel.MAX_PLAYERS);
+        MapModel.MAX_PLAYERS);
     }
 }

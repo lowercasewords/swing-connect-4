@@ -2,6 +2,8 @@ package Session.Map;
 import javax.swing.*;
 import java.awt.*;
 import Exceptions.InvalidPlayerAmountException;
+import Exceptions.UnimplementedException;
+import Session.GameOverInfoArgs;
 /**
  * MVC pattern in use!
  * Displays the Map for the User by retrieving data from its Model.
@@ -18,6 +20,9 @@ public class MapView extends JPanel
     /** Background color of View JPanel */
     public Color _backGroundColor = Color.BLACK;
 
+    // Get / Set methods
+    public MapModel getModel() { return _model; }
+    
 
     /** Creates a Map View that extends from JPanel with grid Layout */
     public MapView(MapModel mapModel)
@@ -27,9 +32,12 @@ public class MapView extends JPanel
         _model = mapModel;
         _gridLayout = (GridLayout)this.getLayout();
     }
-    /** @return the model instance of the view */
-    public MapModel getModel() { return _model; }
-    
+
+    /** Handles what should be shown when the Game Session ends */
+    public void endSessionVisualizer(GameOverInfoArgs gameOverInfoArgs) throws UnimplementedException
+    {
+        throw new UnimplementedException();
+    } 
     /**
      * Creates the visuals of the board
      * @throws InvalidPlayerAmountException
@@ -45,16 +53,16 @@ public class MapView extends JPanel
      * Updates the column of the board according to model
      * @param col A column to be updated
      */
-    public void updateSingleCol(int col) throws Exception
+    public void updateSingleCol(int col) throws UnimplementedException
     {
         for (int row = 0; row < _chips.length; row++) 
         {
         //    _chips[row][col].setSize(, 20);
         }
-        throw new Exception("Not implemented yet!");
+        throw new UnimplementedException();
     }
     /*** Updates the visuals of the board */ 
-    public void updateWholeBoard() throws Exception
+    public void updateWholeBoard() throws UnimplementedException
     {
         for (int row = 0; row < _chips.length; row++) {
             for (int col = 0; col < _chips[row].length; col++) {
@@ -68,6 +76,6 @@ public class MapView extends JPanel
                 // }
             }
         }
-        throw new Exception("Not implemented yet!");
+        throw new UnimplementedException();
     }
 }

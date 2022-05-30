@@ -1,19 +1,18 @@
 package StartUp;
-
-import org.w3c.dom.Text;
 import javax.swing.*;
+import java.awt.*;
+import java.util.Random;
+
+import Session.DisplayInfo;
 import Session.Settings;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.awt.*;
-import java.lang.reflect.GenericDeclaration;
-import java.lang.*;
-import javax.swing.*;
+import Session.Map.MapController;
+import Session.Map.MapModel;
+import Session.Map.MapView;
 
-public class Main implements Consumer{
+import ScoreBoard.*;
+public class Main
+{
     private static Random _random = new Random();
     private static final int MIN_WINDOW_LENGTH = 700;
     private static final int MIN_WINDOW_WIDTH = 700;
@@ -22,40 +21,13 @@ public class Main implements Consumer{
     
     public static void main (String[] args)
     {
-      Main main = new Main();
-      Publisher publisher = main.new Publisher();
-      publisher.addListener(main);
-      publisher.Invoke();
-        // _window.setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH));
-        // _window.setPreferredSize(new Dimension(2048, 2048));
-        // _window.setVisible(true);
-        // _window.setLayout(new BorderLayout());
-
-      // Session.Map.MapModel connectFour = new Session.Map.MapModel();
-    }
-    public class Publisher
-    {
-      private Set<Consumer<EventArgs>> listeners = new HashSet();
-
-      public void addListener(Consumer<EventArgs> listener) {
-          listeners.add(listener);
-      }
-  
-      public void broadcast(EventArgs args) {
-          listeners.forEach(x -> x.accept(args));
-      }
-      public void Invoke()
-      {
-        broadcast(null);
-      }
-    }
-    public class EventArgs
-    {
+        _window.setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH));
+        _window.setPreferredSize(new Dimension(2048, 2048));
+        _window.setVisible(true);
+        _window.setLayout(new BorderLayout());
       
-    }
-    @Override
-    public void accept(Object t) {
-      System.out.println("something happened!");
-      
+       MapController game = new MapController(new MapView(new MapModel()));
+       Settings gameSettings = new Settings(game);
+       ScoreBoardController scoreBoard = new ScoreBoardController(new ScoreBoardView(new ScoreBoardModel()));
     }
 }

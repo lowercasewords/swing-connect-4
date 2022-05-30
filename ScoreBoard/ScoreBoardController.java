@@ -6,5 +6,12 @@ package ScoreBoard;
  */
 public class ScoreBoardController 
 {
-    
+    private ScoreBoardView _view;
+    private ScoreBoardModel _model;
+
+    public ScoreBoardController(ScoreBoardView view)
+    {
+        _view = view;
+        _model = view.getModel();
+    }
 }

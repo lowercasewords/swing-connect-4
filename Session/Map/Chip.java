@@ -19,7 +19,7 @@ public class Chip extends JPanel
   /** Color of the current Chip instance */
   private Color _chipColor;
 
-
+  /** returns the color of Chip instance */
   public Color getChipColor() { return _chipColor; }
 
   /** @return a player turn associated with Chip instance (whose player the chip is) */

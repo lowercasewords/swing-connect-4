@@ -21,7 +21,7 @@ public class MapModel
   private int _rows;
   /** Number of columns in the game board */
   private int _cols;
-  /** Visualization of buttons (the ones you click to summon a chip)*/
+  /** Buttons to click to try summon a Chip */
   private JButton[][] _mapButtons;
 
   public static final int WIN_CONNECTIONS = 4;
@@ -32,9 +32,9 @@ public class MapModel
   public static final int MAX_COLS = 14;
   public static final int MIN_COLS = 7;
 
-  /** Collection of Event Listeners (all classes that listen to specific event in this class).
+  /** Collection of Event Listeners that implement a Consumer interface.
    *  If the game comes to an end, all listeners would be notified and called upon */
-  private Set<Consumer<GameOverInfoArgs>> listeners = new HashSet();
+  private Set<Consumer<GameOverInfoArgs>> listeners = new HashSet<Consumer<GameOverInfoArgs>>();
 
   /** Call to add an Event Listener*/
   public void addListener(Consumer<GameOverInfoArgs> listener)
@@ -56,17 +56,19 @@ public class MapModel
   {
     private final int _row;
     private final int _col;
-    private final JButton _jButton;
-    public ButtonListener(JButton jButton, int row, int col)
+    public ButtonListener(int row, int col)
     {
-      this._jButton = jButton;
       this._row = row;
       this._col = col;
-      
     }
-    /** Executes automatically on button click, tries to place a chip in correct place */
+    /** Executes automatically on button click:
+     *  tries to place a chip in correct place, disables the button if the chip is at its spot */
     @Override
     public void itemStateChanged(ItemEvent e){
+      placeChip(_col);
+      if(_gameBoard[_row][_col] == null){
+        _gameBoard[_row][_col].setEnabled(false);
+      }
     }
   }
 
@@ -97,9 +99,7 @@ public class MapModel
     for (int row = 0; row < rows; row++){
         for (int col = 0; col < cols; col++){
             _mapButtons[row][col] = new JButton();
-            final int buttonCol = col;
-            _mapButtons[row][col].addItemListener(new ButtonListener(_mapButtons[row][col], row, col));
-            throw new UnimplementedException();
+            _mapButtons[row][col].addItemListener(new ButtonListener(row, col));
         }
     }
     // DEGUG LOG:
@@ -119,8 +119,7 @@ public class MapModel
   {
     for (int row = 0; row < _gameBoard.length; row++) {
       for (int col = 0; col < _gameBoard[row].length; col++) {
-        if(_gameBoard[row][col] != null)
-        {
+        if(_gameBoard[row][col] != null){
           return;
         }
       }
@@ -132,9 +131,8 @@ public class MapModel
    * Notifies the Event Listeners if the game is over by the reasons listed before.
    * @param col in what column should chip be placed with the lowest possible row
    * @throws NullPointerException when try accessing a non-existing column
-   * @throws InvalidPlayerWonReasonException 
   */
-  public void placeChip(int col) throws NullPointerException, InvalidPlayerWonReasonException
+  public void placeChip(int col) throws NullPointerException
   {
     int row = 0;
     for (; row < _gameBoard.length; row++){
@@ -144,7 +142,10 @@ public class MapModel
       }
     }
     checkWinner(col, row);
-    isBoardFull();
+    try
+    { isBoardFull(); }
+    catch(InvalidPlayerWonReasonException ex)
+    { System.out.println(ex); }
   }
 
   /**
