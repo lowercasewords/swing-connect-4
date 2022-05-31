@@ -4,18 +4,13 @@ import javax.swing.JPanel;
 
 /**
  * Does <b>NOT</b> follow MVC pattern!
- * Represents a singlechip that is automatically binded to the certain player via _playerCount upon instantiation.
- * <b>Extends JPanel</ b>
+ * Represents a singlechip that is binded to the certain player
+ * <b>Extends JPanel</b>
  */
 public class Chip extends JPanel
 {
-  public static final int MAX_TURN_COUNTER = MapModel.MAX_PLAYERS;
-  public static final int MIN_TURN_COUNTER = 1;
-
-  /** *Kkeeps tracks of turns among all chips, a turn represents */
-  private static int _nextPlayerTurn = MIN_TURN_COUNTER;
-  /** Assigned player turn to the Chip instance */
-  private int _playerTurn = _nextPlayerTurn;
+  /** Determines to what player the Chip instance belongs to */
+  private int _playerTurn;
   /** Color of the current Chip instance */
   private Color _chipColor;
 
@@ -23,24 +18,16 @@ public class Chip extends JPanel
   public Color getChipColor() { return _chipColor; }
 
   /** @return a player turn associated with Chip instance (whose player the chip is) */
-  public int getPlayerTurn() { return _playerTurn; }  
-  
-  /** @return an overall count player turns */
-  public static int getPlayerTurnCounter() { return _nextPlayerTurn; }
+  public int getPlayerTurn() { return _playerTurn; } 
 
 
   /** Instantiates a Chip, assings the current STATIC NextPlayer Turn and increments the STATIC NextPlayerTurn */
-  public Chip() 
+  public Chip(int playerTurn) 
   {
-    _playerTurn = _nextPlayerTurn;
-    // tries to color a chip according to the turn
+    _playerTurn = playerTurn;
+    // tries to color a chip according to the turn, fails if the current turn wasn't implemented by color method
     try { colorChip(); } 
     catch (Exception ex) { System.out.println(ex); }
-
-    // assings and ascends the player turn
-    if(_nextPlayerTurn > MAX_TURN_COUNTER) 
-    { _nextPlayerTurn = MIN_TURN_COUNTER; } 
-    else { _nextPlayerTurn++; }
   }
 
   /***  Sets the color of a chip based on the player turn! */

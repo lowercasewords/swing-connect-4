@@ -14,6 +14,19 @@ import Session.GameOverInfoArgs;
 */
 public class MapModel 
 {
+  public static final int WIN_CONNECTIONS = 4;
+
+  public static final int MAX_PLAYERS = 4;
+  public static final int MIN_PLAYERS = 2;
+
+  public static final int MAX_ROWS = 14;
+  public static final int MIN_ROWS = 7;
+  public static final int MAX_COLS = 14;
+  public static final int MIN_COLS = 7;
+
+  private static final int MAX_PLAYER_TURN = MAX_PLAYERS;
+  private static final int MIN_PLAYER_TURN = 1;
+
   /** Container of chips on the game board */
   private Chip[][] _gameBoard;
   private int _playerCount;
@@ -23,14 +36,8 @@ public class MapModel
   private int _cols;
   /** Buttons to click to try summon a Chip */
   private JButton[][] _mapButtons;
-
-  public static final int WIN_CONNECTIONS = 4;
-  public static final int MAX_PLAYERS = 4;
-  public static final int MIN_PLAYERS = 2;
-  public static final int MAX_ROWS = 14;
-  public static final int MIN_ROWS = 7;
-  public static final int MAX_COLS = 14;
-  public static final int MIN_COLS = 7;
+  /** The last turn wthat was made by player */
+  private int _currentPlayerTurn = MIN_PLAYER_TURN;
 
   /** Collection of Event Listeners that implement a Consumer interface.
    *  If the game comes to an end, all listeners would be notified and called upon */
@@ -71,7 +78,18 @@ public class MapModel
       }
     }
   }
-
+  
+  /** Ascends the player turn in a loop manner so that next player could make their move */
+  private void nextPlayerTurn()
+  {
+    if(_currentPlayerTurn >= MAX_PLAYER_TURN)
+    {
+      _currentPlayerTurn = MIN_PLAYER_TURN;
+    }
+    else{
+      _currentPlayerTurn++;
+    }
+  }
   /**
    * Prepares the board logic and sets players up
    * @param playerCount player count for current session
@@ -137,7 +155,8 @@ public class MapModel
     int row = 0;
     for (; row < _gameBoard.length; row++){
       if (_gameBoard[row][col] != null){
-        _gameBoard[row][col] = new Chip();
+        _gameBoard[row][col] = new Chip(_currentPlayerTurn);
+        nextPlayerTurn();
         break;
       }
     }
@@ -174,7 +193,7 @@ public class MapModel
           {
             try 
             {
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempCol++;
@@ -188,7 +207,7 @@ public class MapModel
           {
             try 
             {
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempCol--;
@@ -197,7 +216,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            gameOverNotify(new GameOverInfoArgs(Chip.getPlayerTurnCounter()));
+            gameOverNotify(new GameOverInfoArgs(_currentPlayerTurn));
           }
             break;
           // vertical
@@ -210,7 +229,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempRow++;
@@ -224,7 +243,7 @@ public class MapModel
           {
             try
             {
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempRow--;
@@ -233,7 +252,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            gameOverNotify(new GameOverInfoArgs(Chip.getPlayerTurnCounter()));
+            gameOverNotify(new GameOverInfoArgs(_currentPlayerTurn));
           }
             break; 
           // diagonal back slash (\)
@@ -246,7 +265,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempCol--;
@@ -262,7 +281,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempCol--;
@@ -272,7 +291,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            gameOverNotify(new GameOverInfoArgs(Chip.getPlayerTurnCounter()));
+            gameOverNotify(new GameOverInfoArgs(_currentPlayerTurn));
           }
            break;
           // diagonal forward slash (/)
@@ -285,7 +304,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempCol++;
@@ -301,7 +320,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == Chip.getPlayerTurnCounter())
+              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempCol--;
@@ -311,7 +330,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            gameOverNotify(new GameOverInfoArgs(Chip.getPlayerTurnCounter()));
+            gameOverNotify(new GameOverInfoArgs(_currentPlayerTurn));
           }
           break;
         default:
