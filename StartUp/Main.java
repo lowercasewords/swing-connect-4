@@ -11,7 +11,7 @@ import Session.Map.MapModel;
 import Session.Map.MapView;
 
 import ScoreBoard.*;
-public class Main
+public class Main 
 {
     private static Random _random = new Random();
     private static final int MIN_WINDOW_LENGTH = 700;
@@ -21,13 +21,13 @@ public class Main
     
     public static void main (String[] args)
     {
-        _window.setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH));
-        _window.setPreferredSize(new Dimension(2048, 2048));
-        _window.setVisible(true);
-        _window.setLayout(new BorderLayout());
+    //     _window.setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH));
+    //     _window.setPreferredSize(new Dimension(2048, 2048));
+    //     _window.setVisible(true);
+    //     _window.setLayout(new BorderLayout());
       
-       MapController game = new MapController(new MapView(new MapModel()));
-       Settings gameSettings = new Settings(game);
-       ScoreBoardController scoreBoard = new ScoreBoardController(new ScoreBoardView(new ScoreBoardModel()));
+    //    MapController game = new MapController(new MapView(new MapModel()));
+    //    Settings gameSettings = new Settings(game);
+    //    ScoreBoardController scoreBoard = new ScoreBoardController(new ScoreBoardView(new ScoreBoardModel()));
     }
 }

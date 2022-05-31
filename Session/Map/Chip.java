@@ -14,24 +14,21 @@ public class Chip extends JPanel
   /** Color of the current Chip instance */
   private Color _chipColor;
 
-  /** returns the color of Chip instance */
+  // Get / Set methods
   public Color getChipColor() { return _chipColor; }
-
-  /** @return a player turn associated with Chip instance (whose player the chip is) */
   public int getPlayerTurn() { return _playerTurn; } 
-
 
   /** Instantiates a Chip, assings the current STATIC NextPlayer Turn and increments the STATIC NextPlayerTurn */
   public Chip(int playerTurn) 
   {
     _playerTurn = playerTurn;
     // tries to color a chip according to the turn, fails if the current turn wasn't implemented by color method
-    try { colorChip(); } 
+    try { setVisual(); } 
     catch (Exception ex) { System.out.println(ex); }
   }
 
   /***  Sets the color of a chip based on the player turn! */
-  private void colorChip() throws Exception
+  private void setVisual() throws Exception
   {
       switch (_playerTurn) {
         case 1:

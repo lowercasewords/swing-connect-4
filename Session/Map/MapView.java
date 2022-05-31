@@ -22,7 +22,6 @@ public class MapView extends JPanel
 
     // Get / Set methods
     public MapModel getModel() { return _model; }
-    
 
     /** Creates a Map View that extends from JPanel with grid Layout */
     public MapView(MapModel mapModel)
@@ -44,38 +43,12 @@ public class MapView extends JPanel
      */
     public void visualizeBoard()
     {
-        // changes the grid layout settings of the View
         _gridLayout.setRows(_chips.length);
         _gridLayout.setColumns(_chips[0].length);
     }
-
-    /**
-     * Updates the column of the board according to model
-     * @param col A column to be updated
-     */
-    public void updateSingleCol(int col) throws UnimplementedException
+    /** Adds a chip to visual board */
+    public void addVisualChip(int row, int col)
     {
-        for (int row = 0; row < _chips.length; row++) 
-        {
-        //    _chips[row][col].setSize(, 20);
-        }
-        throw new UnimplementedException();
-    }
-    /*** Updates the visuals of the board */ 
-    public void updateWholeBoard() throws UnimplementedException
-    {
-        for (int row = 0; row < _chips.length; row++) {
-            for (int col = 0; col < _chips[row].length; col++) {
-                // switch (_chips[row][col].getPlayerTurn()) {
-                //     case value:
-                        
-                //         break;
-                
-                //     default:
-                //         break;
-                // }
-            }
-        }
-        throw new UnimplementedException();
+        this.add(_chips[row][col]);
     }
 }

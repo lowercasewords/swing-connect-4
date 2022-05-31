@@ -36,9 +36,20 @@ public class MapModel
   private int _cols;
   /** Buttons to click to try summon a Chip */
   private JButton[][] _mapButtons;
-  /** The last turn wthat was made by player */
+  /** The turn of player whose move is awaited*/
   private int _currentPlayerTurn = MIN_PLAYER_TURN;
+  /** The turn of the next player who will make a move  */
+  private int _nextPlayerTurn = _currentPlayerTurn + 1;
 
+  // Get / Set methodsurn _nextPlayerTurn; }
+  public int getPlayerCount() { return _playerCount; }
+  public int getRows() { return _rows; }
+  public int getCols() { return _cols; }
+  public Chip getChip(int row, int col) { return _gameBoard[row][col]; }
+  public Chip[][] getGameBoard() { return _gameBoard; }
+  public int getCurrentPlayerTurn() { return _currentPlayerTurn; }
+  public int getNextPlayerTurn() { return _nextPlayerTurn; }
+  
   /** Collection of Event Listeners that implement a Consumer interface.
    *  If the game comes to an end, all listeners would be notified and called upon */
   private Set<Consumer<GameOverInfoArgs>> listeners = new HashSet<Consumer<GameOverInfoArgs>>();
@@ -51,13 +62,6 @@ public class MapModel
   public void gameOverNotify(GameOverInfoArgs args) 
   { listeners.forEach(x -> x.accept(args)); }
 
-  // Get / Set methods
-  public int getPlayerCount() { return _playerCount; }
-  public int getRows() { return _rows; }
-  public int getCols() { return _cols; }
-  public Chip[][] getGameBoard() { return _gameBoard; }
-  public Chip getChip(int row, int col) { return _gameBoard[row][col]; }
-  
   /** Provides the instructions for the map buttons */ 
   private class ButtonListener implements ItemListener 
   {
@@ -72,16 +76,17 @@ public class MapModel
      *  tries to place a chip in correct place, disables the button if the chip is at its spot */
     @Override
     public void itemStateChanged(ItemEvent e){
-      placeChip(_col);
+      // placeChip(_col);
       if(_gameBoard[_row][_col] == null){
         _gameBoard[_row][_col].setEnabled(false);
       }
     }
   }
   
-  /** Ascends the player turn in a loop manner so that next player could make their move */
-  private void nextPlayerTurn()
+  /** Progresses the player turn in the loop manner */
+  private void progressPlayerTurn() throws UnimplementedException
   {
+    _currentPlayerTurn = _nextPlayerTurn;
     if(_currentPlayerTurn >= MAX_PLAYER_TURN)
     {
       _currentPlayerTurn = MIN_PLAYER_TURN;
@@ -97,7 +102,7 @@ public class MapModel
    * @param cols amount of cols for a current session
    * @throws InvalidPlayerAmountException
    */
-  public void startSession(int playerCount, int rows, int cols) throws InvalidPlayerAmountException, UnimplementedException
+  public void prepareBoard(int playerCount, int rows, int cols) throws InvalidPlayerAmountException
   {
     // creates an empty Chip board array
     _gameBoard = new Chip[rows][cols];
@@ -123,6 +128,7 @@ public class MapModel
     // DEGUG LOG:
     System.out.println("The session has been started");
   }
+  
   /** Destroyes the Chip Board board */
   public void destroyBoard() {
     for (int row = 0; row < _gameBoard.length; row++) {
@@ -132,6 +138,7 @@ public class MapModel
     }
     System.out.println("The session has ended");
   }
+  
   /** Notifies Event Listeners if the board is full with 'No Free Space' reason. <b>Doesn't decide the winner!</b>*/
   private void isBoardFull() throws InvalidPlayerWonReasonException
   {
@@ -149,14 +156,15 @@ public class MapModel
    * Notifies the Event Listeners if the game is over by the reasons listed before.
    * @param col in what column should chip be placed with the lowest possible row
    * @throws NullPointerException when try accessing a non-existing column
+   * @return The row the Chip was placed in
   */
-  public void placeChip(int col) throws NullPointerException
+  public int placeChip(int col) throws NullPointerException, UnimplementedException
   {
     int row = 0;
     for (; row < _gameBoard.length; row++){
       if (_gameBoard[row][col] != null){
         _gameBoard[row][col] = new Chip(_currentPlayerTurn);
-        nextPlayerTurn();
+        progressPlayerTurn();
         break;
       }
     }
@@ -165,6 +173,7 @@ public class MapModel
     { isBoardFull(); }
     catch(InvalidPlayerWonReasonException ex)
     { System.out.println(ex); }
+    return row;
   }
 
   /**
