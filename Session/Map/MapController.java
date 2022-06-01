@@ -13,7 +13,6 @@ public class MapController implements Consumer<GameOverInfoArgs>
 {
     private MapView _view;
     private MapModel _model;
-    private GameOverInfoArgs _gameOverInfoArgs;
 
     // Get / Set methods
     public int getMaxPlayers() { return MapModel.MAX_PLAYERS; }
@@ -41,7 +40,7 @@ public class MapController implements Consumer<GameOverInfoArgs>
      */
     public void startSession(int playerCount, int rows, int cols) throws InvalidPlayerAmountException
     {
-        _model.prepareBoard(playerCount, rows, cols);
+        _model.restartBoard(playerCount, rows, cols);
         _view.visualizeBoard();
     }
 
@@ -50,19 +49,19 @@ public class MapController implements Consumer<GameOverInfoArgs>
      * @param col
      * @throws InvalidPlayerAmountException 
      */
-    public void makeMove(int col) throws InvalidPlayerAmountException, UnimplementedException
+    public void makeMove(int col) throws InvalidPlayerAmountException
     {
         int row = _model.placeChip(col);
         _view.addVisualChip(row, col);
     }
 
-    public void gameOver() throws UnimplementedException
-    {
-        throw new UnimplementedException();
-    }
-    /** Handles the end of the Game Session using game over information */
+    /** Handles the end of the Game Session using Game Over information */
     @Override
     public void accept(GameOverInfoArgs gameOverInfoArgs) {
-        // gameOver();
+        try {
+            _view.endSessionVisualizer(gameOverInfoArgs);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 }

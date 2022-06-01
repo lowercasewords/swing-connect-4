@@ -14,6 +14,7 @@ import Session.GameOverInfoArgs;
 */
 public class MapModel 
 {
+  // Constants
   public static final int WIN_CONNECTIONS = 4;
 
   public static final int MAX_PLAYERS = 4;
@@ -27,6 +28,7 @@ public class MapModel
   private static final int MAX_PLAYER_TURN = MAX_PLAYERS;
   private static final int MIN_PLAYER_TURN = 1;
 
+  
   /** Container of chips on the game board */
   private Chip[][] _gameBoard;
   private int _playerCount;
@@ -84,16 +86,11 @@ public class MapModel
   }
   
   /** Progresses the player turn in the loop manner */
-  private void progressPlayerTurn() throws UnimplementedException
+  private void progressPlayerTurn()
   {
     _currentPlayerTurn = _nextPlayerTurn;
-    if(_currentPlayerTurn >= MAX_PLAYER_TURN)
-    {
-      _currentPlayerTurn = MIN_PLAYER_TURN;
-    }
-    else{
-      _currentPlayerTurn++;
-    }
+    if(_nextPlayerTurn >= MAX_PLAYER_TURN) { _nextPlayerTurn = MIN_PLAYER_TURN; }
+    else { _nextPlayerTurn++; }
   }
   /**
    * Prepares the board logic and sets players up
@@ -102,21 +99,17 @@ public class MapModel
    * @param cols amount of cols for a current session
    * @throws InvalidPlayerAmountException
    */
-  public void prepareBoard(int playerCount, int rows, int cols) throws InvalidPlayerAmountException
+  public void restartBoard(int playerCount, int rows, int cols) throws InvalidPlayerAmountException
   {
     // creates an empty Chip board array
     _gameBoard = new Chip[rows][cols];
 
     // ensures correct number of players 
-    if
-    (
-      playerCount > MAX_PLAYERS)  { _playerCount = playerCount; 
-    }  
+    if (playerCount > MAX_PLAYERS)
+    { _playerCount = playerCount; }  
     else
-    {
-      // raises the exception, passing current model instance as an argument
-      throw new InvalidPlayerAmountException(playerCount);
-    }
+    { throw new InvalidPlayerAmountException(playerCount); }
+     
     // creates map buttons with functionallity
     _mapButtons = new JButton[rows][cols];
     for (int row = 0; row < rows; row++){
@@ -130,6 +123,7 @@ public class MapModel
   }
   
   /** Destroyes the Chip Board board */
+  @Deprecated
   public void destroyBoard() {
     for (int row = 0; row < _gameBoard.length; row++) {
       for (int col = 0; col < _gameBoard.length; col++) {
@@ -149,16 +143,18 @@ public class MapModel
         }
       }
     }
+    // Notifies all listeners about Game Over Event
     gameOverNotify(new GameOverInfoArgs(GameOverInfoArgs.NO_FREE_SPACE));
   }
+  
   /**
-   * Places a chip in the board, then checks for winner afterwards, then checks if the board is full. 
+   * Places a chip in the board, then if game is over, then progresses player turn
    * Notifies the Event Listeners if the game is over by the reasons listed before.
    * @param col in what column should chip be placed with the lowest possible row
    * @throws NullPointerException when try accessing a non-existing column
    * @return The row the Chip was placed in
   */
-  public int placeChip(int col) throws NullPointerException, UnimplementedException
+  public int placeChip(int col) throws NullPointerException
   {
     int row = 0;
     for (; row < _gameBoard.length; row++){

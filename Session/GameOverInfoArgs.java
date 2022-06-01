@@ -3,8 +3,10 @@ package Session;
 import Exceptions.InvalidPlayerWonReasonException;
 
 /** Stores final information about the ending session, called upon the game over*/
-public class GameOverInfoArgs {
-    public static final String REASON_UKNOWN = "Reason Uknown";
+public class GameOverInfoArgs 
+{
+    // Constants
+    public static final String REASON_UKNOWN = "Reason Unknown";
     public static final String PLAYER_WON = "Player Won";
     public static final String NO_FREE_SPACE = "No Free Space";
     public static final String QUIT = "Quit";

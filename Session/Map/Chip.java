@@ -1,50 +1,48 @@
 package Session.Map;
 import java.awt.Color;
 import javax.swing.JPanel;
-
+import StartUp.ImagePanel;
 /**
  * Does <b>NOT</b> follow MVC pattern!
  * Represents a singlechip that is binded to the certain player
  * <b>Extends JPanel</b>
  */
-public class Chip extends JPanel
+public class Chip extends ImagePanel
 {
+  // Constants
+  public static final String RED = "Images/Red.png";
+  public static final String YELLOW = "Images/Yellow.png"; 
+  public static final String GREEN = "Images/Green.png"; 
+  public static final String GRAY = "Images/Gray.png"; 
+  public static final String UNKNOWN = "Images/missing.png"; 
+
   /** Determines to what player the Chip instance belongs to */
   private int _playerTurn;
-  /** Color of the current Chip instance */
-  private Color _chipColor;
 
   // Get / Set methods
-  public Color getChipColor() { return _chipColor; }
   public int getPlayerTurn() { return _playerTurn; } 
 
-  /** Instantiates a Chip, assings the current STATIC NextPlayer Turn and increments the STATIC NextPlayerTurn */
+  /** Creates a chip an image corresponding to the player turn*/
   public Chip(int playerTurn) 
   {
     _playerTurn = playerTurn;
-    // tries to color a chip according to the turn, fails if the current turn wasn't implemented by color method
-    try { setVisual(); } 
-    catch (Exception ex) { System.out.println(ex); }
+    setImage(getCorrectImage(_playerTurn));
   }
 
-  /***  Sets the color of a chip based on the player turn! */
-  private void setVisual() throws Exception
+  /**
+   * Returns an image that matches the player turn
+   * @param playerTurn which player's image should be retrieved
+   * @return image that matches a player turn
+   */
+  public static String getCorrectImage(int playerTurn)
   {
-      switch (_playerTurn) {
-        case 1:
-          _chipColor = Color.red;
-          break;
-        case 2:
-          _chipColor = Color.yellow;
-          break;
-        case 3:
-          _chipColor = Color.green;
-          break;
-        case 4:
-          _chipColor = Color.white;
-        default:
-        _chipColor = Color.black;
-          throw new Exception(_playerTurn + " is not a case in the current method. Did you expand maximum amount of players without expanding this method?");
-      }
+    switch(playerTurn)
+    {
+      case 1: return RED;
+      case 2: return YELLOW;
+      case 3: return GREEN;
+      case 4: return GRAY;
+     default: return UNKNOWN;
+    }
   }
 }

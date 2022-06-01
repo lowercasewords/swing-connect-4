@@ -21,11 +21,12 @@ public class Main
     
     public static void main (String[] args)
     {
-    //     _window.setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_LENGTH));
-    //     _window.setPreferredSize(new Dimension(2048, 2048));
-    //     _window.setVisible(true);
-    //     _window.setLayout(new BorderLayout());
-      
+        // _window.setPreferredSize(new Dimension(2048, 2048));
+        _window.setMinimumSize(new Dimension(1300, 1300));
+        _window.setVisible(true);
+        _window.setLayout(new GridLayout(14, 14));
+        System.out.println(_window.getSize());
+
     //    MapController game = new MapController(new MapView(new MapModel()));
     //    Settings gameSettings = new Settings(game);
     //    ScoreBoardController scoreBoard = new ScoreBoardController(new ScoreBoardView(new ScoreBoardModel()));
