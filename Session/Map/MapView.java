@@ -27,8 +27,8 @@ public class MapView extends JPanel
     public MapView(MapModel mapModel)
     {
         super(new GridLayout());
-        _chips = _model.getGameBoard();
         _model = mapModel;
+        _chips = _model.getGameBoard();
         _gridLayout = (GridLayout)this.getLayout();
     }
 

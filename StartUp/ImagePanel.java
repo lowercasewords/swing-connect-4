@@ -18,11 +18,8 @@ public class ImagePanel extends JPanel
      */
     public void setImage(String filePath) 
     { 
-        try {
-            _image = ImageIO.read(new File(filePath));
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        try { _image = ImageIO.read(new File(filePath)); }
+        catch (Exception e) { System.out.println(e); }
     }
     /** Stores an image from specified file path */
     public ImagePanel(String filePath) 

@@ -1,5 +1,8 @@
 package StartUp;
 import javax.swing.*;
+
+import Exceptions.UnimplementedException;
+
 import java.awt.*;
 import java.util.Random;
 
@@ -19,16 +22,30 @@ public class Main
 
     private static JFrame _window = new JFrame("Connect - 4");
     
-    public static void main (String[] args)
+    public static void main (String[] args) throws UnimplementedException
     {
-        // _window.setPreferredSize(new Dimension(2048, 2048));
-        _window.setMinimumSize(new Dimension(1300, 1300));
+        _window.setPreferredSize(new Dimension(2048, 2048));
+
+        _window.setMinimumSize(new Dimension(MIN_WINDOW_LENGTH, MIN_WINDOW_WIDTH));
         _window.setVisible(true);
-        _window.setLayout(new GridLayout(14, 14));
+        _window.setLayout(new BorderLayout());
         System.out.println(_window.getSize());
 
-    //    MapController game = new MapController(new MapView(new MapModel()));
-    //    Settings gameSettings = new Settings(game);
-    //    ScoreBoardController scoreBoard = new ScoreBoardController(new ScoreBoardView(new ScoreBoardModel()));
+       MapController game = new MapController(new MapView(new MapModel()));
+       _window.add(game.getView(), BorderLayout.CENTER);
+       game.getView().setBackground(Color.green);
+       
+        Settings settings = new Settings(game);
+        _window.add(settings, BorderLayout.EAST);
+        settings.setBackground(Color.red);
+
+       ScoreBoardController scoreBoard = new ScoreBoardController(new ScoreBoardView(new ScoreBoardModel()));
+       _window.add(scoreBoard.getView(), BorderLayout.WEST);
+       scoreBoard.getView().setBackground(Color.black);
+       
+       
+       DisplayInfo displayInfo = new DisplayInfo(game);
+       _window.add(displayInfo, BorderLayout.NORTH);
+       displayInfo.setBackground(Color.yellow);
     }
 }

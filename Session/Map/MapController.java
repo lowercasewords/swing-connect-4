@@ -20,6 +20,7 @@ public class MapController implements Consumer<GameOverInfoArgs>
     public int getMaxCols() { return MapModel.MAX_COLS; }
     public int getCurrentPlayerTurn() { return _model.getCurrentPlayerTurn(); }
     public int getNextPlayerTurn() { return _model.getNextPlayerTurn(); }
+    public MapView getView() { return _view; }
     
     /**
      * Creates a Map Controller (the brain of the Map that creates communication between View and Model)

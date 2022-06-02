@@ -9,6 +9,9 @@ public class ScoreBoardController
     private ScoreBoardView _view;
     private ScoreBoardModel _model;
 
+    // GET / SET Methods
+    public ScoreBoardView getView() { return _view; }
+
     public ScoreBoardController(ScoreBoardView view)
     {
         _view = view;
