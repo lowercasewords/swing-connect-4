@@ -2,16 +2,16 @@ package Session;
 
 import javax.swing.*;
 
-import Exceptions.UnimplementedException;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import Session.Map.*;
+
+import Exceptions.UnimplementedException;
 /**
  * Doesn't follow MVC pattern
- * Configures overall settings and the upcoming session (e.g. player count, map size, sound and music)
+ * Configures overall and the upcoming session settings (e.g. player count, map size, sound and music)
  */
 public class Settings extends JPanel
 {   
@@ -22,14 +22,18 @@ public class Settings extends JPanel
     private static final String SOUND_ON = "Sound: ON";
     private static final String SOUND_OFF = "Sound: OFF";
     
-    // Buttons 
+    
+    private JPanel _startSessionPanel;
     private JButton _startSessionButton = new JButton(START_SIGN);
-    private JToggleButton _musicButton = new JToggleButton(MUSIC_ON);
-    private JToggleButton _soundButton = new JToggleButton(SOUND_ON);
-    private JPanel _playerCount;
-    private JTextField _askRowCount = new JTextField();
-    private JTextField _askColCount = new JTextField();
+    
+    private JPanel _overallSettingsPanel;
+    private JToggleButton _musicSwitchButton = new JToggleButton(MUSIC_OFF);
+    private JToggleButton _soundSwitchButton = new JToggleButton(SOUND_OFF);
 
+    private JPanel _playerCountPanel;
+    private ButtonGroup _playerCountButtonGroup = new ButtonGroup();
+    private JRadioButton[] _playerCountRadButton;
+    // Game Session we configuring
     private MapController _mapController;
 
     /** 
@@ -40,14 +44,20 @@ public class Settings extends JPanel
     {
         super(new FlowLayout(FlowLayout.TRAILING));
         _mapController = new MapController(new MapView(new MapModel()));
-        // adding buttons to Settings Panel
-        this.add(_startSessionButton);
-        this.add(_musicButton);
-        this.add(_soundButton);
-        this.add(_askPlayerCount);
-        this.add(_askRowCount);
-        this.add(_askColCount);
-        // JLabel
+
+        // Adding and Configuring Start Session Part
+        _startSessionPanel = new JPanel(new BoxLayout(_startSessionPanel, BoxLayout.Y_AXIS));
+        this.add(_startSessionButton, BorderLayout.SOUTH);
+        _startSessionPanel.add(_startSessionButton);
+
+        // Adding and Configuring Sound and Music
+        _overallSettingsPanel = new JPanel(new BoxLayout(_overallSettingsPanel, BoxLayout.Y_AXIS));
+        _overallSettingsPanel.add(_musicSwitchButton);
+        _overallSettingsPanel.add(_soundSwitchButton);
+        
+        // Adding and Configuring Player CountDeclaring 
+        _playerCountPanel = new JPanel(new BoxLayout(_playerCountPanel, BoxLayout.Y_AXIS));
+        
 
         // providing logic to each button
         _musicButton.addItemListener(itemEvent  -> {

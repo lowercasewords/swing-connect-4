@@ -1,57 +1,80 @@
 package Session.Map;
 import java.awt.event.*;
+
 import javax.swing.*;
+
 import java.util.HashSet;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.Set;
+import java.util.Map.Entry;
+import java.util.HashMap;
+
+import Session.GameOverInfoArgs;
 import Exceptions.InvalidPlayerAmountException;
 import Exceptions.InvalidPlayerWonReasonException;
 import Exceptions.UnimplementedException;
-import Session.GameOverInfoArgs;
 /**
  * MVC Pattern in use!
  * Talks to the database to retrieve the overal scores
 */
 public class MapModel 
 {
-  // Constants
+  // Static Constants
   public static final int WIN_CONNECTIONS = 4;
 
-  public static final int MAX_PLAYERS = 4;
-  public static final int MIN_PLAYERS = 2;
-
-  public static final int MAX_ROWS = 14;
-  public static final int MIN_ROWS = 7;
-  public static final int MAX_COLS = 14;
-  public static final int MIN_COLS = 7;
-
-  private static final int MAX_PLAYER_TURN = MAX_PLAYERS;
-  private static final int MIN_PLAYER_TURN = 1;
+  /**
+   * Set Rules for size of the board depending on the player count 
+   * <b>KEY</b>: player count
+   * <b>VALUE</b/: board size
+   * */
+  private static final HashMap<Integer, Integer> BOARD_SIZES = new HashMap<Integer, Integer>() {{
+    put(2, 7); put(3, 9); put(4, 14); }};
 
   
   /** Container of chips on the game board */
   private Chip[][] _gameBoard;
   private int _playerCount;
-  /** Number of rows in the game board */
-  private int _rows;
-  /** Number of columns in the game board */
-  private int _cols;
+    // Provides ability to traverse through players //
+  //---------------------------\\
+  private int _maxPlayerTurn = _playerCount;
+  private int _minPlayerTurn = 1;
+  //---------------------------//
+  /** Rows and Columns of the board (they are equal) */
+  public int _boardSize;
   /** Buttons to click to try summon a Chip */
   private JButton[][] _mapButtons;
   /** The turn of player whose move is awaited*/
-  private int _currentPlayerTurn = MIN_PLAYER_TURN;
+  private int _currentPlayerTurn = _minPlayerTurn;
   /** The turn of the next player who will make a move  */
   private int _nextPlayerTurn = _currentPlayerTurn + 1;
 
   // Get / Set methodsurn _nextPlayerTurn; }
   public int getPlayerCount() { return _playerCount; }
-  public int getRows() { return _rows; }
-  public int getCols() { return _cols; }
+  // private static Entry<Integer, Integer> entry(int i, int j) { return null; }
+  public int getBoardSize() { return _boardSize; }
   public Chip getChip(int row, int col) { return _gameBoard[row][col]; }
   public Chip[][] getGameBoard() { return _gameBoard; }
   public int getCurrentPlayerTurn() { return _currentPlayerTurn; }
   public int getNextPlayerTurn() { return _nextPlayerTurn; }
+  public int getMaxPlayers() { return _maxPlayerTurn; }
+  public int getMinPlayers() { return _minPlayerTurn; }
+  public int[] getPossiblePlayerChoices()
+  {
+    Integer[] integerArr = BOARD_SIZES.keySet().toArray(Integer[]::new);
+    int[] toReturn = new int[integerArr.length];
+    for (int i = 0; i < toReturn.length; i++) {
+      toReturn[i] = integerArr[i].intValue();
+    }
+      return toReturn;
+  }
   
+    // Implementation of Producer/Consumer pattern
+    //    Producer: (this) class that notifies Consumer classes when something interesting happened inside
+    // of Producer (they are called events). In this case, Produces notifies Consumer when the game is over
+    //    Consumer: any class that listens to Producer in order to handle the event. In this case, Consumer
+    // must implement Consumer<GameOverInfoArgs> interface in order to receive and handle events 
+  // --------------------------------------------------------------------------------------------\\
   /** Collection of Event Listeners that implement a Consumer interface.
    *  If the game comes to an end, all listeners would be notified and called upon */
   private Set<Consumer<GameOverInfoArgs>> listeners = new HashSet<Consumer<GameOverInfoArgs>>();
@@ -63,7 +86,10 @@ public class MapModel
   /** Invokes the <b>accept method</b> in listeners*/
   public void gameOverNotify(GameOverInfoArgs args) 
   { listeners.forEach(x -> x.accept(args)); }
-
+  // --------------------------------------------------------------------------------------------//
+  
+  
+  
   /** Provides the instructions for the map buttons */ 
   private class ButtonListener implements ItemListener 
   {
@@ -78,7 +104,7 @@ public class MapModel
      *  tries to place a chip in correct place, disables the button if the chip is at its spot */
     @Override
     public void itemStateChanged(ItemEvent e){
-      // placeChip(_col);
+      placeChip(_col);
       if(_gameBoard[_row][_col] == null){
         _gameBoard[_row][_col].setEnabled(false);
       }
@@ -89,7 +115,7 @@ public class MapModel
   private void progressPlayerTurn()
   {
     _currentPlayerTurn = _nextPlayerTurn;
-    if(_nextPlayerTurn >= MAX_PLAYER_TURN) { _nextPlayerTurn = MIN_PLAYER_TURN; }
+    if(_nextPlayerTurn >= _maxPlayerTurn) { _nextPlayerTurn = _minPlayerTurn; }
     else { _nextPlayerTurn++; }
   }
   /**
@@ -99,21 +125,19 @@ public class MapModel
    * @param cols amount of cols for a current session
    * @throws InvalidPlayerAmountException
    */
-  public void restartBoard(int playerCount, int rows, int cols) throws InvalidPlayerAmountException
+  public void restartBoard(int playerCount) throws InvalidPlayerAmountException
   {
-    // creates an empty Chip board array
-    _gameBoard = new Chip[rows][cols];
+    Integer  boardSideSize = BOARD_SIZES.get(playerCount);
 
-    // ensures correct number of players 
-    if (playerCount > MAX_PLAYERS)
-    { _playerCount = playerCount; }  
-    else
-    { throw new InvalidPlayerAmountException(playerCount); }
-     
+    if(boardSideSize == null)
+    { throw new InvalidPlayerAmountException(this, playerCount); }
+    
+    _gameBoard = new Chip[boardSideSize][boardSideSize];
+
     // creates map buttons with functionallity
-    _mapButtons = new JButton[rows][cols];
-    for (int row = 0; row < rows; row++){
-        for (int col = 0; col < cols; col++){
+    _mapButtons = new JButton[boardSideSize][boardSideSize];
+    for (int row = 0; row < boardSideSize; row++){
+        for (int col = 0; col < boardSideSize; col++){
             _mapButtons[row][col] = new JButton();
             _mapButtons[row][col].addItemListener(new ButtonListener(row, col));
         }

@@ -15,9 +15,8 @@ public class MapController implements Consumer<GameOverInfoArgs>
     private MapModel _model;
 
     // Get / Set methods
-    public int getMaxPlayers() { return MapModel.MAX_PLAYERS; }
-    public int getMaxRows() { return MapModel.MAX_ROWS; }
-    public int getMaxCols() { return MapModel.MAX_COLS; }
+    public int getMaxPlayersTurn() { return _model.getMaxPlayers(); }
+    public int getBoardSize() { return _model._boardSize; }
     public int getCurrentPlayerTurn() { return _model.getCurrentPlayerTurn(); }
     public int getNextPlayerTurn() { return _model.getNextPlayerTurn(); }
     public MapView getView() { return _view; }
@@ -39,17 +38,19 @@ public class MapController implements Consumer<GameOverInfoArgs>
      * @param cols Amount of cols in the map
      * @throws TooManyPlayersException 
      */
-    public void startSession(int playerCount, int rows, int cols) throws InvalidPlayerAmountException
+    public void startSession(int playerCount) throws InvalidPlayerAmountException
     {
-        _model.restartBoard(playerCount, rows, cols);
+        _model.restartBoard(playerCount);
         _view.visualizeBoard();
     }
 
     /**
+     * DEPRECIATED: SHould be called. Player moves should be handled by Model Buttons and Events (Producer / Consumer pattern)
      * Asks a player to make a move and updates the board accordingly
      * @param col
      * @throws InvalidPlayerAmountException 
      */
+    @Deprecated
     public void makeMove(int col) throws InvalidPlayerAmountException
     {
         int row = _model.placeChip(col);
