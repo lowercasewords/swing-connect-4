@@ -60,40 +60,40 @@ public class Settings extends JPanel
         
 
         // providing logic to each button
-        _musicButton.addItemListener(itemEvent  -> {
+        _musicSwitchButton.addItemListener(itemEvent  -> {
             int state = itemEvent.getStateChange();
-            itemEvent.
+            // itemEvent.
             if(itemEvent.SELECTED == state) {
-                _musicButton.setText(MUSIC_ON);
+                _musicSwitchButton.setText(MUSIC_ON);
             }
             else
             {
-                _musicButton.setText("off");
+                _musicSwitchButton.setText("off");
             }
         });
-        _soundButton.addItemListener(itemEvent  -> {
+        _soundSwitchButton.addItemListener(itemEvent  -> {
             int state = itemEvent.getStateChange();
             if(itemEvent.SELECTED == state) {
-                _soundButton.setText(SOUND_ON);
+                _soundSwitchButton.setText(SOUND_ON);
             }
             else
             {
-                _soundButton.setText(SOUND_OFF);
+                _soundSwitchButton.setText(SOUND_OFF);
             }
         });
       
-        _askPlayerCount.addKeyListener(new KeyListener() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                // TODO Auto-generated method stub
-                String value = _askPlayerCount.getText();
-                int l = value.length();
-            }
-            @Override
-            public void keyTyped(KeyEvent e) {}
-            @Override
-            public void keyReleased(KeyEvent e) {}
-         });
+        // _askPlayerCount.addKeyListener(new KeyListener() {
+        //     @Override
+        //     public void keyPressed(KeyEvent e) {
+        //         // TODO Auto-generated method stub
+        //         String value = _askPlayerCount.getText();
+        //         int l = value.length();
+        //     }
+        //     @Override
+        //     public void keyTyped(KeyEvent e) {}
+        //     @Override
+        //     public void keyReleased(KeyEvent e) {}
+        //  });
         //  _askRowCount.addKeyListener(new KeyListener() {
         //      @Override
         //      public void keyPressed(KeyEvent e) {
@@ -112,17 +112,18 @@ public class Settings extends JPanel
         //     public void keyReleased(KeyEvent e) {}
              
         //  });
-        _startSessionButton.addActionListener(x -> {
-            _startSessionButton.setText(RESTART_SIGN);
-            try {
-                int playerCount = Integer.parseInt(_askPlayerCount.getText());
-                int rows = Integer.parseInt(_askRowCount.getText());
-                int cols = Integer.parseInt(_askColCount.getText());
-                _mapController.startSession(playerCount, rows, cols);
-            } catch (Exception e) {
-                //TODO: handle exception
-            }
+
+        // _startSessionButton.addActionListener(x -> {
+        //     _startSessionButton.setText(RESTART_SIGN);
+        //     try {
+        //         int playerCount = Integer.parseInt(_askPlayerCount.getText());
+        //         int rows = Integer.parseInt(_askRowCount.getText());
+        //         int cols = Integer.parseInt(_askColCount.getText());
+        //         _mapController.startSession(playerCount, rows, cols);
+        //     } catch (Exception e) {
+        //         //TODO: handle exception
+        //     }
             
-        }); 
+        // }); 
     }
 }
