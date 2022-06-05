@@ -1,6 +1,6 @@
 package Exceptions;
 
-import Session.GameOverInfoArgs;
+import Session.Arguments.GameOverArgs;
 
 /** Thrown when trying to put PlayerWon as the reason for the session to end <b>manually</b>.
  *  To do that, pass the turn of the winning player*/
@@ -10,6 +10,6 @@ public class InvalidPlayerWonReasonException extends Exception
      * Said reason is being called automatically when specifying a turn of the winning player */
     public InvalidPlayerWonReasonException()
     {
-        super(GameOverInfoArgs.PLAYER_WON + " reason cannot be chosen without manually, specify ");
+        super(GameOverArgs.PLAYER_WON + " reason cannot be chosen without manually, specify ");
     }
 }

@@ -4,12 +4,14 @@ import java.util.function.Consumer;
 
 import Exceptions.InvalidPlayerAmountException;
 import Exceptions.UnimplementedException;
-import Session.GameOverInfoArgs;
+import Session.Arguments.Args;
+import Session.Arguments.GameOverArgs;
+import Session.Arguments.PlacedChipArgs;
 /**
  * MVC Pattern in use!
  * Controlls its view and model by talking to the model which will affect the view
  */
-public class MapController implements Consumer<GameOverInfoArgs>
+public class MapController implements Consumer<Args>
 {
     private MapView _view;
     private MapModel _model;
@@ -38,10 +40,16 @@ public class MapController implements Consumer<GameOverInfoArgs>
      * @param cols Amount of cols in the map
      * @throws TooManyPlayersException 
      */
-    public void startSession(int playerCount) throws InvalidPlayerAmountException
+    public void startSession(int playerCount)
     {
-        _model.restartBoard(playerCount);
-        _view.visualizeBoard();
+        try {
+            _model.restartBoard(playerCount);
+            _view.visualizeBoard();
+            System.out.println("Player amount is right");
+        } catch (InvalidPlayerAmountException e) {
+            System.out.print("Player Amount is invaild, try again");
+        }
+
     }
 
     /**
@@ -57,13 +65,24 @@ public class MapController implements Consumer<GameOverInfoArgs>
         _view.addVisualChip(row, col);
     }
 
-    /** Handles the end of the Game Session using Game Over information */
+    /** Handles the Producer notifications by downcasting args  */
     @Override
-    public void accept(GameOverInfoArgs gameOverInfoArgs) {
-        try {
-            _view.endSessionVisualizer(gameOverInfoArgs);
-        } catch (Exception e) {
-            System.out.println(e);
+    public void accept(Args args) {
+        if((GameOverArgs)args != null)
+        {
+            GameOverArgs gameOverArgs = (GameOverArgs)args;
+            try {
+                _view.endSessionVisualizer(gameOverArgs);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+        if((PlacedChipArgs)args != null)
+        {
+            PlacedChipArgs placedChipArgs = (PlacedChipArgs)args;
+            _view.addVisualChip(placedChipArgs.getRow(), placedChipArgs.getCol());
+            
         }
     }
+    
 }

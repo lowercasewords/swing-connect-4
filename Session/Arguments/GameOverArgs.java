@@ -1,9 +1,8 @@
-package Session;
-
+package Session.Arguments;
 import Exceptions.InvalidPlayerWonReasonException;
 
 /** Stores final information about the ending session, called upon the game over*/
-public class GameOverInfoArgs 
+public class GameOverArgs extends Args
 {
     // Constants
     public static final String REASON_UKNOWN = "Reason Unknown";
@@ -19,7 +18,7 @@ public class GameOverInfoArgs
     public int getWinnerPlayerTurn() { return _winningPlayerTurn; }
 
     /** Chooses a winning player. Player Won will be the reason for the session to end  */
-    public GameOverInfoArgs(int winningPlayerTurn)
+    public GameOverArgs(int winningPlayerTurn)
     {
         this._winningPlayerTurn = winningPlayerTurn;
         this._reason = PLAYER_WON;
@@ -29,7 +28,7 @@ public class GameOverInfoArgs
      * @param reason Reason for session to end
      * @throws InvalidPlayerWonReasonException Thrown when 'Player Won' was the reason, choose the winning player turn to set it as the reason!
      */
-    public GameOverInfoArgs(String reason) throws InvalidPlayerWonReasonException
+    public GameOverArgs(String reason) throws InvalidPlayerWonReasonException
     {
         if(reason == PLAYER_WON) { throw new InvalidPlayerWonReasonException();}
         this._reason = reason;

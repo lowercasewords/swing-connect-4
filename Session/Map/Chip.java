@@ -26,7 +26,7 @@ public class Chip extends ImagePanel
   public Chip(int playerTurn) 
   {
     _playerTurn = playerTurn;
-    setImage(getCorrectImage(_playerTurn));
+    setImage(getCorrectPath(_playerTurn));
   }
 
   /**
@@ -34,7 +34,7 @@ public class Chip extends ImagePanel
    * @param playerTurn which player's image should be retrieved
    * @return image that matches a player turn
    */
-  public static String getCorrectImage(int playerTurn)
+  public static String getCorrectPath(int playerTurn)
   {
     switch(playerTurn)
     {

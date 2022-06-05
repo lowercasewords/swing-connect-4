@@ -1,21 +1,25 @@
 package Session;
 
 import javax.swing.*;
+import javax.swing.text.StyledDocument;
 
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.concurrent.Flow;
 
 import Session.Map.*;
-
+import Exceptions.InvalidPlayerAmountException;
 import Exceptions.UnimplementedException;
 /**
  * Doesn't follow MVC pattern
  * Configures overall and the upcoming session settings (e.g. player count, map size, sound and music)
+ * <a href="https://www.tutorialsfield.com/jbutton-click-event/">Event Cheat Sheet</a>
  */
 public class Settings extends JPanel
 {   
-    private static final String START_SIGN = "Start";
+    private static final String START_SIGN = "Start New Session";
     private static final String RESTART_SIGN = "Restart";
     private static final String MUSIC_ON = "Music: ON";
     private static final String MUSIC_OFF = "Music: OFF";
@@ -23,57 +27,61 @@ public class Settings extends JPanel
     private static final String SOUND_OFF = "Sound: OFF";
     
     
-    private JPanel _startSessionPanel;
+    /* Game Session being configured */
+    private MapController _mapController;
+
+
+    private JPanel _startSessionPanel = new JPanel(new GridLayout());
     private JButton _startSessionButton = new JButton(START_SIGN);
     
-    private JPanel _overallSettingsPanel;
+
+    private JPanel _overallSettingsPanel = new JPanel();
     private JToggleButton _musicSwitchButton = new JToggleButton(MUSIC_OFF);
     private JToggleButton _soundSwitchButton = new JToggleButton(SOUND_OFF);
 
-    private JPanel _playerCountPanel;
-    private ButtonGroup _playerCountButtonGroup = new ButtonGroup();
-    private JRadioButton[] _playerCountRadButton;
-    // Game Session we configuring
-    private MapController _mapController;
 
+    private JPanel _playerSettings = new JPanel(new BorderLayout());
+    private JPanel _playerCountPanel = new JPanel(new GridLayout());
+    private ButtonGroup _playerCountButtonGroup = new ButtonGroup();
+    /* Radio buttons for choosing player amount */
+    private JRadioPlayerCount[] _playerCountRadButtons;
+    private JPanel _playerMessagePanel = new JPanel(new FlowLayout());
+    private JTextPane _playerMessage = new JTextPane();
+    
+    
+    /* Array of possible amounts of players */
+    private static final int[] PLAYER_CHOICES = MapModel.getPlayerChoices();
+    
     /** 
-     * Creates an Settings object for a Session, and binds itself with MapController in order to affect the session
+     * Creates an Settings object for a Session, and binds itself with MapController in order to affect the session.
      * @param A Map Controller to bind with
     */
-    public Settings(MapController mapController) throws UnimplementedException
+    public Settings(MapController mapController)
     {
-        super(new FlowLayout(FlowLayout.TRAILING));
-        _mapController = new MapController(new MapView(new MapModel()));
+        super();
+        this.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Adding and Configuring Start Session Part
-        _startSessionPanel = new JPanel(new BoxLayout(_startSessionPanel, BoxLayout.Y_AXIS));
-        this.add(_startSessionButton, BorderLayout.SOUTH);
-        _startSessionPanel.add(_startSessionButton);
+        _mapController = mapController;
 
-        // Adding and Configuring Sound and Music
-        _overallSettingsPanel = new JPanel(new BoxLayout(_overallSettingsPanel, BoxLayout.Y_AXIS));
+        //   Configuring Sound and Music parts
+        //--------------------------------------------\\
+        this.add(_overallSettingsPanel);
         _overallSettingsPanel.add(_musicSwitchButton);
         _overallSettingsPanel.add(_soundSwitchButton);
-        
-        // Adding and Configuring Player CountDeclaring 
-        _playerCountPanel = new JPanel(new BoxLayout(_playerCountPanel, BoxLayout.Y_AXIS));
-        
-
-        // providing logic to each button
-        _musicSwitchButton.addItemListener(itemEvent  -> {
-            int state = itemEvent.getStateChange();
-            // itemEvent.
-            if(itemEvent.SELECTED == state) {
+        // Implementing Sound & Music buttons
+        _musicSwitchButton.addItemListener(click  -> {
+            int state = click.getStateChange();
+            if(ItemEvent.SELECTED == state) {
                 _musicSwitchButton.setText(MUSIC_ON);
             }
             else
             {
-                _musicSwitchButton.setText("off");
+                _musicSwitchButton.setText(MUSIC_OFF);
             }
         });
-        _soundSwitchButton.addItemListener(itemEvent  -> {
-            int state = itemEvent.getStateChange();
-            if(itemEvent.SELECTED == state) {
+        _soundSwitchButton.addItemListener(click  -> {
+            int state = click.getStateChange();
+            if(ItemEvent.SELECTED == state) {
                 _soundSwitchButton.setText(SOUND_ON);
             }
             else
@@ -81,49 +89,70 @@ public class Settings extends JPanel
                 _soundSwitchButton.setText(SOUND_OFF);
             }
         });
-      
-        // _askPlayerCount.addKeyListener(new KeyListener() {
-        //     @Override
-        //     public void keyPressed(KeyEvent e) {
-        //         // TODO Auto-generated method stub
-        //         String value = _askPlayerCount.getText();
-        //         int l = value.length();
-        //     }
-        //     @Override
-        //     public void keyTyped(KeyEvent e) {}
-        //     @Override
-        //     public void keyReleased(KeyEvent e) {}
-        //  });
-        //  _askRowCount.addKeyListener(new KeyListener() {
-        //      @Override
-        //      public void keyPressed(KeyEvent e) {
-        //         String value = _askPlayerCount.getText();
-        //         int l = value.length();
-        //         if (e.getKeyChar() > '0' && e.getKeyChar() <= '4') {
-        //             _askPlayerCount.setEditable(true);
-        //         } else {
-        //             _askPlayerCount.setEditable(false);
-        //         }
-        //      }
-        //      @Override
-        //      public void keyTyped(KeyEvent e) {}
- 
-        //     @Override
-        //     public void keyReleased(KeyEvent e) {}
-             
-        //  });
+        //--------------------------------------------//
+        
+        //  Configuring StartSession parts
+        //----------------------------------------------------------------------------------------\\
+        // Adding Start Session components
+        this.add(_startSessionPanel);
+        _startSessionPanel.add(_startSessionButton);
+        // Implementing the start session button 
+        _startSessionButton.addActionListener(click -> {
+            for(int i = 0; i < _playerCountRadButtons.length; i++)
+            {
+                if(_playerCountRadButtons[i].isSelected())
+                {
+                    System.out.println("Starting the game from settings");
+                    _mapController.startSession(_playerCountRadButtons[i].getPlayerCount());
+                    break;
+                }
+            }
+        }); 
+        //----------------------------------------------------------------------------------------//
 
-        // _startSessionButton.addActionListener(x -> {
-        //     _startSessionButton.setText(RESTART_SIGN);
-        //     try {
-        //         int playerCount = Integer.parseInt(_askPlayerCount.getText());
-        //         int rows = Integer.parseInt(_askRowCount.getText());
-        //         int cols = Integer.parseInt(_askColCount.getText());
-        //         _mapController.startSession(playerCount, rows, cols);
-        //     } catch (Exception e) {
-        //         //TODO: handle exception
-        //     }
-            
-        // }); 
+        //  Configuring Player Settings part 
+        //--------------------------------------------\\
+        // Adding Player Settings components
+        _playerMessage.setEditable(false);
+        _playerMessage.setText("Select Players");
+        _playerMessagePanel.add(_playerMessage, BorderLayout.CENTER);
+        // Implementing Radio Buttons from MapModel to button group
+        _playerCountRadButtons = new JRadioPlayerCount[PLAYER_CHOICES.length];
+        for (int i = 0; i < PLAYER_CHOICES.length; i++)
+        {
+            JRadioPlayerCount radButton = new JRadioPlayerCount(PLAYER_CHOICES[i] +
+                                                    " players", PLAYER_CHOICES[i]);
+            _playerCountRadButtons[i] = radButton;
+            radButton.addItemListener(click -> {
+                if(click.getStateChange() == ItemEvent.SELECTED)
+                {
+                    
+                    // radButton.setText("Selected!");
+                }
+                else
+                {
+                    // radButton.setText("Deselected");
+                }
+            });
+            if(i == 0) { radButton.setSelected(true); }
+            _playerCountButtonGroup.add(radButton);
+            _playerCountPanel.add(radButton);
+        }
+        this.add(_playerSettings);
+        _playerSettings.add(_playerMessagePanel);
+        _playerMessagePanel.setBackground(Color.black);
+        _playerMessagePanel.add(_playerMessage);
+        this.add(_playerCountPanel);
+        _playerSettings.add(_playerCountPanel);
+        //--------------------------------------------\\
+    }
+    /* Used to store information about Player Count in each Radio button */
+    private class JRadioPlayerCount extends JRadioButton{
+        private int _playerCount;
+        public int getPlayerCount() { return _playerCount; }
+        public JRadioPlayerCount(String text, int playerCount) {
+            super(text);
+            _playerCount = playerCount;
+        }
     }
 }

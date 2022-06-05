@@ -1,4 +1,5 @@
 package Session.Map;
+import java.awt.Color;
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -10,15 +11,17 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.HashMap;
 
-import Session.GameOverInfoArgs;
 import Exceptions.InvalidPlayerAmountException;
 import Exceptions.InvalidPlayerWonReasonException;
 import Exceptions.UnimplementedException;
+import Session.Arguments.Args;
+import Session.Arguments.GameOverArgs;
+import Session.Arguments.PlacedChipArgs;
 /**
  * MVC Pattern in use!
  * Talks to the database to retrieve the overal scores
 */
-public class MapModel 
+public class MapModel
 {
   // Static Constants
   public static final int WIN_CONNECTIONS = 4;
@@ -30,10 +33,10 @@ public class MapModel
    * */
   private static final HashMap<Integer, Integer> BOARD_SIZES = new HashMap<Integer, Integer>() {{
     put(2, 7); put(3, 9); put(4, 14); }};
-
-  
+    
+    
   /** Container of chips on the game board */
-  private Chip[][] _gameBoard;
+  private Chip[][] _mapChips;
   private int _playerCount;
     // Provides ability to traverse through players //
   //---------------------------\\
@@ -49,17 +52,17 @@ public class MapModel
   /** The turn of the next player who will make a move  */
   private int _nextPlayerTurn = _currentPlayerTurn + 1;
 
-  // Get / Set methodsurn _nextPlayerTurn; }
+  // Get / Set methods
   public int getPlayerCount() { return _playerCount; }
-  // private static Entry<Integer, Integer> entry(int i, int j) { return null; }
   public int getBoardSize() { return _boardSize; }
-  public Chip getChip(int row, int col) { return _gameBoard[row][col]; }
-  public Chip[][] getGameBoard() { return _gameBoard; }
+  public Chip getChip(int row, int col) { return _mapChips[row][col]; }
+  public Chip[][] getMapChips() { return _mapChips; }
+  public JButton[][] getMapButtons() { return _mapButtons; }
   public int getCurrentPlayerTurn() { return _currentPlayerTurn; }
   public int getNextPlayerTurn() { return _nextPlayerTurn; }
   public int getMaxPlayers() { return _maxPlayerTurn; }
   public int getMinPlayers() { return _minPlayerTurn; }
-  public int[] getPossiblePlayerChoices()
+  public static int[] getPlayerChoices()
   {
     Integer[] integerArr = BOARD_SIZES.keySet().toArray(Integer[]::new);
     int[] toReturn = new int[integerArr.length];
@@ -68,27 +71,23 @@ public class MapModel
     }
       return toReturn;
   }
-  
+
     // Implementation of Producer/Consumer pattern
     //    Producer: (this) class that notifies Consumer classes when something interesting happened inside
-    // of Producer (they are called events). In this case, Produces notifies Consumer when the game is over
+    // of Producer, in other words, events. For example, an event could be raised when the game is over
     //    Consumer: any class that listens to Producer in order to handle the event. In this case, Consumer
     // must implement Consumer<GameOverInfoArgs> interface in order to receive and handle events 
   // --------------------------------------------------------------------------------------------\\
   /** Collection of Event Listeners that implement a Consumer interface.
    *  If the game comes to an end, all listeners would be notified and called upon */
-  private Set<Consumer<GameOverInfoArgs>> listeners = new HashSet<Consumer<GameOverInfoArgs>>();
+  private Set<Consumer<Args>> listeners = new HashSet<Consumer<Args>>();
 
   /** Call to add an Event Listener*/
-  public void addListener(Consumer<GameOverInfoArgs> listener)
-  { listeners.add(listener); }
+  public void addListener(Consumer<Args> listener) { listeners.add(listener); }
 
   /** Invokes the <b>accept method</b> in listeners*/
-  public void gameOverNotify(GameOverInfoArgs args) 
-  { listeners.forEach(x -> x.accept(args)); }
+  public void notifyConsumers(Args args) { listeners.forEach(x -> x.accept(args)); }
   // --------------------------------------------------------------------------------------------//
-  
-  
   
   /** Provides the instructions for the map buttons */ 
   private class ButtonListener implements ItemListener 
@@ -100,13 +99,14 @@ public class MapModel
       this._row = row;
       this._col = col;
     }
+
     /** Executes automatically on button click:
      *  tries to place a chip in correct place, disables the button if the chip is at its spot */
     @Override
     public void itemStateChanged(ItemEvent e){
       placeChip(_col);
-      if(_gameBoard[_row][_col] == null){
-        _gameBoard[_row][_col].setEnabled(false);
+      if(_mapChips[_row][_col] == null){
+        _mapChips[_row][_col].setEnabled(false);
       }
     }
   }
@@ -119,7 +119,7 @@ public class MapModel
     else { _nextPlayerTurn++; }
   }
   /**
-   * Prepares the board logic and sets players up
+   * Prepares the board logic and sets players up from scratch
    * @param playerCount player count for current session
    * @param rows amount of rows for a current session
    * @param cols amount of cols for a current session
@@ -127,31 +127,32 @@ public class MapModel
    */
   public void restartBoard(int playerCount) throws InvalidPlayerAmountException
   {
-    Integer  boardSideSize = BOARD_SIZES.get(playerCount);
+    System.out.println("Starting the game from Map Model");
+    
+    Integer boardSideSize = BOARD_SIZES.get(playerCount);
 
     if(boardSideSize == null)
     { throw new InvalidPlayerAmountException(this, playerCount); }
     
-    _gameBoard = new Chip[boardSideSize][boardSideSize];
+    _mapChips = new Chip[boardSideSize][boardSideSize];
 
     // creates map buttons with functionallity
     _mapButtons = new JButton[boardSideSize][boardSideSize];
     for (int row = 0; row < boardSideSize; row++){
         for (int col = 0; col < boardSideSize; col++){
             _mapButtons[row][col] = new JButton();
+            _mapButtons[row][col].setForeground(Color.ORANGE);
             _mapButtons[row][col].addItemListener(new ButtonListener(row, col));
         }
     }
-    // DEGUG LOG:
-    System.out.println("The session has been started");
   }
   
   /** Destroyes the Chip Board board */
   @Deprecated
   public void destroyBoard() {
-    for (int row = 0; row < _gameBoard.length; row++) {
-      for (int col = 0; col < _gameBoard.length; col++) {
-        _gameBoard[row][col] = null; 
+    for (int row = 0; row < _mapChips.length; row++) {
+      for (int col = 0; col < _mapChips.length; col++) {
+        _mapChips[row][col] = null; 
       }
     }
     System.out.println("The session has ended");
@@ -160,15 +161,15 @@ public class MapModel
   /** Notifies Event Listeners if the board is full with 'No Free Space' reason. <b>Doesn't decide the winner!</b>*/
   private void isBoardFull() throws InvalidPlayerWonReasonException
   {
-    for (int row = 0; row < _gameBoard.length; row++) {
-      for (int col = 0; col < _gameBoard[row].length; col++) {
-        if(_gameBoard[row][col] != null){
+    for (int row = 0; row < _mapChips.length; row++) {
+      for (int col = 0; col < _mapChips[row].length; col++) {
+        if(_mapChips[row][col] != null){
           return;
         }
       }
     }
     // Notifies all listeners about Game Over Event
-    gameOverNotify(new GameOverInfoArgs(GameOverInfoArgs.NO_FREE_SPACE));
+    notifyConsumers(new GameOverArgs(GameOverArgs.NO_FREE_SPACE));
   }
   
   /**
@@ -181,9 +182,11 @@ public class MapModel
   public int placeChip(int col) throws NullPointerException
   {
     int row = 0;
-    for (; row < _gameBoard.length; row++){
-      if (_gameBoard[row][col] != null){
-        _gameBoard[row][col] = new Chip(_currentPlayerTurn);
+    for (; row < _mapChips.length; row++){
+      if (_mapChips[row][col] != null){
+        Chip putChip = new Chip(_currentPlayerTurn);
+        _mapChips[row][col] = putChip;
+        notifyConsumers(new PlacedChipArgs(putChip, row, col));
         progressPlayerTurn();
         break;
       }
@@ -222,7 +225,7 @@ public class MapModel
           {
             try 
             {
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
+              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempCol++;
@@ -236,7 +239,7 @@ public class MapModel
           {
             try 
             {
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
+              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempCol--;
@@ -245,7 +248,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            gameOverNotify(new GameOverInfoArgs(_currentPlayerTurn));
+            notifyConsumers(new GameOverArgs(_currentPlayerTurn));
           }
             break;
           // vertical
@@ -258,7 +261,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
+              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempRow++;
@@ -272,7 +275,7 @@ public class MapModel
           {
             try
             {
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
+              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempRow--;
@@ -281,7 +284,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            gameOverNotify(new GameOverInfoArgs(_currentPlayerTurn));
+            notifyConsumers(new GameOverArgs(_currentPlayerTurn));
           }
             break; 
           // diagonal back slash (\)
@@ -294,7 +297,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
+              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempCol--;
@@ -310,7 +313,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
+              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempCol--;
@@ -320,7 +323,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            gameOverNotify(new GameOverInfoArgs(_currentPlayerTurn));
+            notifyConsumers(new GameOverArgs(_currentPlayerTurn));
           }
            break;
           // diagonal forward slash (/)
@@ -333,7 +336,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
+              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempCol++;
@@ -349,7 +352,7 @@ public class MapModel
           {
             try 
             { 
-              if(_gameBoard[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
+              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
               { con++; }
               else { break; }
               tempCol--;
@@ -359,7 +362,7 @@ public class MapModel
           }
           if (con >= WIN_CONNECTIONS)
           {
-            gameOverNotify(new GameOverInfoArgs(_currentPlayerTurn));
+            notifyConsumers(new GameOverArgs(_currentPlayerTurn));
           }
           break;
         default:

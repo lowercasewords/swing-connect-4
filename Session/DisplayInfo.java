@@ -12,7 +12,11 @@ import java.awt.BorderLayout;
 import javax.imageio.ImageIO;
 
 import Session.Map.MapController;
+import Session.Arguments.Args;
+import Session.Arguments.GameOverArgs;
+import Session.Arguments.PlacedChipArgs;
 import Session.Map.Chip;
+
 import StartUp.ImagePanel;
 import Exceptions.UnimplementedException;
 
@@ -20,10 +24,17 @@ import Exceptions.UnimplementedException;
  * Displays information about current session (next player move, what player won)
  * <b> Extends JPanel </b> 
  */
-public class DisplayInfo extends JPanel implements Consumer<GameOverInfoArgs>
+public class DisplayInfo extends JPanel implements Consumer<Args>
 {
     private static final Random randomizer = new Random();
 
+    private JPanel _currentTurnBox = new JPanel(new BorderLayout());
+    private JTextArea _currentTurnText = new JTextArea("Moves Now:");
+    private ImagePanel _currentTurnImage = new ImagePanel();    
+    private JPanel _nextTurnBox = new JPanel(new BorderLayout());
+    private JTextArea _nextTurnText = new JTextArea("Moves Next:");
+    private ImagePanel _nextTurnImage = new ImagePanel();
+    
     /** A Map Controller it is binded to */
     private MapController _mapController;
 
@@ -31,17 +42,19 @@ public class DisplayInfo extends JPanel implements Consumer<GameOverInfoArgs>
      * Convenient retreval of current layout without downcasting
      * @return Grid Layout of the current instance
      */
-    public GridLayout getLayout() { return (GridLayout)this.getLayout(); }
+    // public GridLayout getLayout() { return (GridLayout)this.getLayout(); }
 
     public DisplayInfo(MapController mapController)
     {
         super(new GridLayout());
         _mapController = mapController;;
-        nonRunningDisplay();
+        showDefault();
+        showPlayerTurns();
     }
-
+    @Override
+    public String toString() { return "Display Component"; }
     /** Creates randomized text when the game is not running */
-    private void nonRunningDisplay()
+    private void showDefault()
     {
         this.removeAll();
         
@@ -57,29 +70,28 @@ public class DisplayInfo extends JPanel implements Consumer<GameOverInfoArgs>
 
     /**
      *  Displays the turns of the current and next player 
-     * <b> IMPORTANT </b> in the future should use actual images, not colored panels!
      * */
-    private void playerTurns() throws UnimplementedException
+    private void showPlayerTurns()
     {
         this.removeAll();
-        getLayout().setColumns(2);
-        
-        JPanel currentTurnBox = new JPanel(new BorderLayout());
-        JTextArea currentTurnText = new JTextArea("Moves:");
-        ImagePanel currentTurnImage = new ImagePanel(Chip.getCorrectImage(_mapController.getCurrentPlayerTurn()));
-        currentTurnBox.add(currentTurnText);
-        currentTurnBox.add(currentTurnImage);
-        this.add(currentTurnBox);
+        ((GridLayout)getLayout()).setColumns(2);
+        updateTurns();
 
-        JPanel nextTurnBox = new JPanel(new BorderLayout());
-        JTextArea nextTurnText = new JTextArea("Next:");
-        ImagePanel nextTurnImage = new ImagePanel(Chip.getCorrectImage(_mapController.getNextPlayerTurn()));
-        nextTurnBox.add(nextTurnText);
-        nextTurnBox.add(nextTurnImage);
-        this.add(nextTurnBox);
+        this.add(_currentTurnBox);
+        _currentTurnBox.add(_currentTurnText);
+        _currentTurnBox.add(_currentTurnImage);
+
+        this.add(_nextTurnBox);
+        _nextTurnBox.add(_nextTurnText);
+        _nextTurnBox.add(_nextTurnImage);
     }
-    
+    private void updateTurns()
+    {
+        _currentTurnImage = new ImagePanel(Chip.getCorrectPath(_mapController.getCurrentPlayerTurn()));
+        _nextTurnImage = new ImagePanel(Chip.getCorrectPath(_mapController.getNextPlayerTurn()));
+    }
     /** Constructs and Assigns the message about who makes the move right now */
+    @Deprecated
     public void buildCurrentTurnString() throws UnimplementedException
     {
         int nextPlayerTurn = _mapController.getNextPlayerTurn();
@@ -88,24 +100,33 @@ public class DisplayInfo extends JPanel implements Consumer<GameOverInfoArgs>
 
     /** <b> Runs when the Game Session is over </b> */
     @Override
-    public void accept(GameOverInfoArgs gameOverInfoArgs)
+    public void accept(Args args)
     {
-        this.removeAll();
-        JTextArea jTextArea = new JTextArea();
-        switch (gameOverInfoArgs._reason) {
-            case GameOverInfoArgs.NO_FREE_SPACE:
-                jTextArea.setText("TIE We've ran out of space!");
-                break;
-            case GameOverInfoArgs.PLAYER_WON:
-                jTextArea.setText("Player #" + gameOverInfoArgs.getWinnerPlayerTurn() + " has won!");
-                break;
-            case GameOverInfoArgs.QUIT:
-                jTextArea.setText("You Quit. Game is over");
-                break;
-            case GameOverInfoArgs.REASON_UKNOWN:
-                jTextArea.setText("Game session was ended for uknown reason. Acess the console for further details");
-                break;
+        // Handle Game Over
+        if((GameOverArgs)args != null)
+        {
+            GameOverArgs gameOverArgs = (GameOverArgs)args;
+            this.removeAll();
+            JTextArea jTextArea = new JTextArea();
+            switch (gameOverArgs._reason) 
+            {
+                case GameOverArgs.NO_FREE_SPACE:
+                    jTextArea.setText("TIE We've ran out of space!");
+                    break;
+                case GameOverArgs.PLAYER_WON:
+                    jTextArea.setText("Player #" + gameOverArgs.getWinnerPlayerTurn() + " has won!");
+                    break;
+                case GameOverArgs.QUIT:
+                    jTextArea.setText("You Quit. Game is over");
+                    break;
+                case GameOverArgs.REASON_UKNOWN:
+                    jTextArea.setText("Game session was ended for uknown reason. Acess the console for further details");
+                    break;
+            }
         }
-
+        // To update the chip information accordingly 
+        if ((PlacedChipArgs)args != null) {
+            showPlayerTurns();
+        }
     }
 }
