@@ -43,7 +43,7 @@ public class MapModel
   private int _playerCount;
     // Provides ability to traverse through players //
   //---------------------------\\
-  private int _maxPlayerTurn = _playerCount;
+  private int _maxPlayerTurn;
   private int _minPlayerTurn = 1;
   //---------------------------//
   /** Rows and Columns of the board (they are equal) */
@@ -121,17 +121,28 @@ public class MapModel
   /** Progresses the player turn in the loop manner */
   private void progressPlayerTurn()
   {
+    log("max players: " + _maxPlayerTurn);
+    log("min players: " + _minPlayerTurn);
+    log("Before Changes:");
+    log("\t current turn: " + _currentPlayerTurn);
+    log("\t next turn: " + _nextPlayerTurn);
+
     _currentPlayerTurn = _nextPlayerTurn;
-    if(_nextPlayerTurn >= _maxPlayerTurn) 
+    _nextPlayerTurn++;
+
+    
+    if(_nextPlayerTurn > _maxPlayerTurn) 
     {
       _nextPlayerTurn = _minPlayerTurn; 
       log("Restarting player turn");
     }
     else 
     {
-      _nextPlayerTurn++; 
       log("player turn has progressed");
     }
+    log("After Changes:");
+    log("\t current turn: " + _currentPlayerTurn);
+    log("\t next turn: " + _nextPlayerTurn);
   }
   /**
    * Prepares the board logic and sets players up from scratch
@@ -143,6 +154,10 @@ public class MapModel
   public void restartBoard(int playerCount) throws InvalidPlayerAmountException
   { 
     _playerCount = playerCount;
+    _maxPlayerTurn = _playerCount;
+    _currentPlayerTurn = _minPlayerTurn;
+    _nextPlayerTurn = _currentPlayerTurn + 1;
+
     Integer boardSideSize = BOARD_SIZES.get(playerCount);
 
     if(boardSideSize == null)
