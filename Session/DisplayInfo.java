@@ -77,12 +77,20 @@ public class DisplayInfo extends JPanel implements Consumer<Args>
         updateTurns();
 
         this.add(_currentTurnBox);
+        this.revalidate();
+        this.repaint();
         _currentTurnBox.add(_currentTurnText);
         _currentTurnBox.add(_currentTurnImage);
+        _currentTurnBox.revalidate();
+        _currentTurnBox.repaint();
 
         this.add(_nextTurnBox);
+        this.revalidate();
+        this.repaint();
         _nextTurnBox.add(_nextTurnText);
         _nextTurnBox.add(_nextTurnImage);
+        _nextTurnBox.revalidate();
+        _nextTurnBox.repaint();
     }
     private void updateTurns()
     {

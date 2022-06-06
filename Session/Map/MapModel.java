@@ -22,7 +22,7 @@ import Session.Arguments.PlacedChipArgs;
 import static StartUp.HelperLib.log;
 /**
  * MVC Pattern in use!
- * Talks to the database to retrieve the overal scores
+ * Responsible for the map logic 
 */
 public class MapModel
 {
@@ -122,8 +122,16 @@ public class MapModel
   private void progressPlayerTurn()
   {
     _currentPlayerTurn = _nextPlayerTurn;
-    if(_nextPlayerTurn >= _maxPlayerTurn) { _nextPlayerTurn = _minPlayerTurn; }
-    else { _nextPlayerTurn++; }
+    if(_nextPlayerTurn >= _maxPlayerTurn) 
+    {
+      _nextPlayerTurn = _minPlayerTurn; 
+      log("Restarting player turn");
+    }
+    else 
+    {
+      _nextPlayerTurn++; 
+      log("player turn has progressed");
+    }
   }
   /**
    * Prepares the board logic and sets players up from scratch
@@ -133,9 +141,8 @@ public class MapModel
    * @throws InvalidPlayerAmountException
    */
   public void restartBoard(int playerCount) throws InvalidPlayerAmountException
-  {
-    log("Starting the game from Map Model");
-    
+  { 
+    _playerCount = playerCount;
     Integer boardSideSize = BOARD_SIZES.get(playerCount);
 
     if(boardSideSize == null)
@@ -179,7 +186,8 @@ public class MapModel
   }
   
   /**
-   * Places a chip in the board and progreses the player turn
+   * Places a chip in the board and progreses the player turn,
+   * notifying consumers if the chip was placed or the game is either over
    * @param col in what column should chip be placed with the lowest possible row
    * @throws NullPointerException when try accessing a non-existing column
    * @return The row the Chip was placed in
@@ -193,6 +201,7 @@ public class MapModel
         Chip putChip = new Chip(_currentPlayerTurn);
         _mapChips[row][col] = putChip;
         Args args = new PlacedChipArgs(putChip, row, col);
+        log(putChip.getPlayerTurn() + " has moved");
         notifyConsumers(args);
         progressPlayerTurn();
         break;
@@ -211,8 +220,7 @@ public class MapModel
    * @param row row of the chip
    * @param col column of the chip
    */
-  private void checkWinner(int row, int col)
-  {
+  private void checkWinner(int row, int col) {
     // check for connect-WIN_CONNECTIONS WIN_CONNECTIONS times
     for(int i = 0; i < WIN_CONNECTIONS; i++)
     {

@@ -96,6 +96,7 @@ public class MapView extends JPanel
     public void addChipVisually(Chip chip, int row, int col)
     {
         getCell(row, col).setImage(chip.getImagePath());
+        getCell(row, col).removeAll();
         this.revalidate();
         this.repaint();
     }

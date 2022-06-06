@@ -48,7 +48,6 @@ public class MapController implements Consumer<Args>
         try {
             _model.restartBoard(playerCount);
             _view.visualizeBoard();
-            log("Player amount is right");
             
         } catch (InvalidPlayerAmountException e) {
             System.out.print("Player Amount is invaild, try again");

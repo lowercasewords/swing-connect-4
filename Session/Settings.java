@@ -103,7 +103,6 @@ public class Settings extends JPanel
             {
                 if(_playerCountRadButtons[i].isSelected())
                 {
-                    log("Starting the game from settings");
                     _mapController.startSession(_playerCountRadButtons[i].getPlayerCount());
                     break;
                 }

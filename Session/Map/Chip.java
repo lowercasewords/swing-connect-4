@@ -5,7 +5,6 @@ import StartUp.ImagePanel;
 /**
  * Does <b>NOT</b> follow MVC pattern!
  * Represents a singlechip that is binded to the certain player
- * <b>Extends JPanel</b>
  */
 public class Chip 
 {
