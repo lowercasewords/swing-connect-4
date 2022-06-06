@@ -7,7 +7,7 @@ import StartUp.ImagePanel;
  * Represents a singlechip that is binded to the certain player
  * <b>Extends JPanel</b>
  */
-public class Chip extends ImagePanel
+public class Chip 
 {
   // Constants
   public static final String RED = "Images/Red.png";
@@ -18,17 +18,19 @@ public class Chip extends ImagePanel
 
   /** Determines to what player the Chip instance belongs to */
   private int _playerTurn;
-
+  private String _imagePath;
+  
+  
   // Get / Set methods
   public int getPlayerTurn() { return _playerTurn; } 
+  public String getImagePath() { return _imagePath; } 
 
   /** Creates a chip an image corresponding to the player turn*/
   public Chip(int playerTurn) 
   {
     _playerTurn = playerTurn;
-    setImage(getCorrectPath(_playerTurn));
+    _imagePath = getCorrectPath(_playerTurn);
   }
-
   /**
    * Returns an image that matches the player turn
    * @param playerTurn which player's image should be retrieved

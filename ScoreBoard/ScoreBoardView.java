@@ -8,6 +8,7 @@ import javax.swing.*;
  * Displays the Score Board for the User by retrieving data from its Model.
  *  Class is handled by the Controller 
  */
+@Deprecated
 public class ScoreBoardView extends JPanel
 {
     private ScoreBoardModel _model;

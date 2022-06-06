@@ -7,6 +7,7 @@ import Exceptions.UnimplementedException;
 import Session.Arguments.Args;
 import Session.Arguments.GameOverArgs;
 import Session.Arguments.PlacedChipArgs;
+import static StartUp.HelperLib.log;
 /**
  * MVC Pattern in use!
  * Controlls its view and model by talking to the model which will affect the view
@@ -22,7 +23,8 @@ public class MapController implements Consumer<Args>
     public int getCurrentPlayerTurn() { return _model.getCurrentPlayerTurn(); }
     public int getNextPlayerTurn() { return _model.getNextPlayerTurn(); }
     public MapView getView() { return _view; }
-    
+    /* Adds a listener from the model */
+    public void addModelListener(Consumer<Args> listener) { _model.addListener(listener); }
     /**
      * Creates a Map Controller (the brain of the Map that creates communication between View and Model)
      * @param view A Map View to bind with. Gets Map Model from the View
@@ -31,6 +33,7 @@ public class MapController implements Consumer<Args>
     {
         this._view = view;
         this._model = view.getModel();
+        _model.addListener(this);
     }
     
     /**
@@ -45,43 +48,35 @@ public class MapController implements Consumer<Args>
         try {
             _model.restartBoard(playerCount);
             _view.visualizeBoard();
-            System.out.println("Player amount is right");
+            log("Player amount is right");
+            
         } catch (InvalidPlayerAmountException e) {
             System.out.print("Player Amount is invaild, try again");
         }
 
     }
 
-    /**
-     * DEPRECIATED: SHould be called. Player moves should be handled by Model Buttons and Events (Producer / Consumer pattern)
-     * Asks a player to make a move and updates the board accordingly
-     * @param col
-     * @throws InvalidPlayerAmountException 
-     */
-    @Deprecated
-    public void makeMove(int col) throws InvalidPlayerAmountException
-    {
-        int row = _model.placeChip(col);
-        _view.addVisualChip(row, col);
-    }
-
     /** Handles the Producer notifications by downcasting args  */
     @Override
     public void accept(Args args) {
-        if((GameOverArgs)args != null)
+        log("view accept was invoked");
+        if(args instanceof GameOverArgs)
         {
             GameOverArgs gameOverArgs = (GameOverArgs)args;
             try {
                 _view.endSessionVisualizer(gameOverArgs);
             } catch (Exception e) {
-                System.out.println(e);
+                log(e);
             }
         }
-        if((PlacedChipArgs)args != null)
+        else if(args instanceof PlacedChipArgs)
         {
+            log("args in view accept was downcasted to PlacedChipsArgs type");
             PlacedChipArgs placedChipArgs = (PlacedChipArgs)args;
-            _view.addVisualChip(placedChipArgs.getRow(), placedChipArgs.getCol());
-            
+            _view.addChipVisually(
+                placedChipArgs.getChip(),
+                placedChipArgs.getRow(),
+                placedChipArgs.getCol());
         }
     }
     

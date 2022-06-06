@@ -7,7 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-
+import static StartUp.HelperLib.log;
 public class ImagePanel extends JPanel 
 {
     private BufferedImage _image;
@@ -19,16 +19,12 @@ public class ImagePanel extends JPanel
     public void setImage(String filePath) 
     { 
         try { _image = ImageIO.read(new File(filePath)); }
-        catch (Exception e) { System.out.println(e); }
+        catch (IOException e) { log("Image couldn't be loaded"); }
     }
     /** Stores an image from specified file path */
     public ImagePanel(String filePath) 
     {
-       try {                
-          _image = ImageIO.read(new File(filePath));
-       } catch (IOException ex) {
-            System.out.println("Image couldn't be loaded");
-       }
+       setImage(filePath);
     }
     /** Default missing Image */
     public ImagePanel()

@@ -12,19 +12,21 @@ import Session.Settings;
 import Session.Map.MapController;
 import Session.Map.MapModel;
 import Session.Map.MapView;
-
 import ScoreBoard.*;
+import static  StartUp.HelperLib.log;
+
 /* Represents the whole application window */
 public class Main extends JFrame
 {
     private static final Random _random = new Random();
-    private static final int MIN_WINDOW_LENGTH = 700;
-    private static final int MIN_WINDOW_WIDTH = 700;
+    private static final int WINDOW_LENGTH = 700;
+    private static final int WINDOW_WIDTH = 700;
     
     public static void main (String[] args) throws UnimplementedException
     {
         Main main = new Main();
     }
+
     public Main()
     {
         super("Connect - 4");
@@ -33,8 +35,7 @@ public class Main extends JFrame
     }
     private void visualizeComponents()
     {
-        this.setPreferredSize(new Dimension(2048, 2048));
-        this.setMinimumSize(new Dimension(MIN_WINDOW_LENGTH, MIN_WINDOW_WIDTH));
+        this.setSize(new Dimension(WINDOW_LENGTH, WINDOW_WIDTH));
         this.setLayout(new BorderLayout());
         this.setVisible(true);
 
@@ -47,9 +48,9 @@ public class Main extends JFrame
        settings.setBackground(Color.red);
        this.add(settings, BorderLayout.NORTH);   
 
-       ScoreBoardController scoreBoard = new ScoreBoardController(new ScoreBoardView(new ScoreBoardModel()));
-       scoreBoard.getView().setBackground(Color.black);
-       this.add(scoreBoard.getView(), BorderLayout.WEST);
+    //    ScoreBoardController scoreBoard = new ScoreBoardController(new ScoreBoardView(new ScoreBoardModel()));
+    //    scoreBoard.getView().setBackground(Color.black);
+    //    this.add(scoreBoard.getView(), BorderLayout.WEST);
        
        DisplayInfo displayInfo = new DisplayInfo(gameBoard);
        displayInfo.setBackground(Color.CYAN);
@@ -57,5 +58,7 @@ public class Main extends JFrame
        
        this.revalidate();
        this.repaint();
+
+       log(gameBoard.getView().getSize());
     }
 }

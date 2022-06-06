@@ -1,17 +1,23 @@
 package Session.Map;
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
+
 import java.awt.*;
 import java.util.function.Consumer;
 
 import Exceptions.InvalidPlayerAmountException;
 import Exceptions.UnimplementedException;
 import Session.Arguments.*;
+import StartUp.ImagePanel;
+
+import static StartUp.HelperLib.log;
 /**
  * MVC pattern in use!
  * Displays the Map for the User by retrieving data from its Model.
  * Class is handled by its Controller. <b>Extends JPanel</b>
  */
-public class MapView extends JPanel implements Consumer<Args>
+public class MapView extends JPanel
 {
     /** Stores the object of its model */
     private MapModel _model;
@@ -19,22 +25,23 @@ public class MapView extends JPanel implements Consumer<Args>
     private Chip[][] _mapChips;
     /** Retrieves buttons from the Model */
     private JButton[][] _mapButtons;
+    /** Panel where the button is in-closed on the board */
+    private ImagePanel[][] _mapCells;
     /** Is used to configure grd layout settings (amount of rows, columns, size, e.g.) */
     private GridLayout _gridLayout;
     /** Background color of View JPanel */
     public Color _backGroundColor = Color.BLACK;
-
+    
+    
     // Get / Set methods
     public MapModel getModel() { return _model; }
+    private ImagePanel getCell(int row, int col) { return _mapCells[row][col]; }
 
     /** Creates a Map View that extends from JPanel with grid Layout */
     public MapView(MapModel mapModel)
     {
         super(new GridLayout());
         _gridLayout = (GridLayout)getLayout();
-        
-        _gridLayout.setVgap(1);
-        _gridLayout.setHgap(1);
         
         _model = mapModel;
 
@@ -53,42 +60,43 @@ public class MapView extends JPanel implements Consumer<Args>
      */
     public void visualizeBoard()
     {
+        this.removeAll();
+        this.revalidate();
+        this.repaint();
+
         _mapChips = _model.getMapChips();
         _mapButtons = _model.getMapButtons();
 
         _gridLayout.setRows(_mapChips.length);
         _gridLayout.setColumns(_mapChips[0].length);
 
-        for (int row = 0; row < _gridLayout.getRows(); row++) {
-            for (int col = 0; col < _gridLayout.getColumns(); col++) {
-                this.add(_mapButtons[row][col]);
-                _mapButtons[row][col].setForeground(Color.black);
-                _mapButtons[row][col].setBackground(Color.yellow);
-                _mapButtons[row][col].revalidate();
-                _mapButtons[row][col].repaint();
+        _mapCells = new ImagePanel[_gridLayout.getRows()][_gridLayout.getColumns()];
+
+        for (int row = 0; row < _gridLayout.getRows(); row++) 
+        {
+            for (int col = 0; col < _gridLayout.getColumns(); col++) 
+            {
+                _mapCells[row][col] = new ImagePanel("Images/cell-frame.png");
+                ImagePanel cell = _mapCells[row][col];
+                cell.setLayout(new BorderLayout());
+                cell.setBorder((Border)new LineBorder(Color.BLACK, 5));
+                this.add(cell);
+                this.revalidate();
+                this.repaint();
+
+                JButton button = _mapButtons[row][col];
+                button.setOpaque(false);
+                cell.add(button);
+                button.revalidate();
+                button.repaint();
             }
         }
-        System.out.println("Amount of buttons: " + (_mapButtons.length + _mapButtons[0].length));
-        System.out.println("Buttons added to the visual board");
     }
     /** Adds a chip to visual board */
-    public void addVisualChip(int row, int col)
+    public void addChipVisually(Chip chip, int row, int col)
     {
-        this.add(_mapChips[row][col]);
+        getCell(row, col).setImage(chip.getImagePath());
         this.revalidate();
         this.repaint();
-    }
-
-    @Override
-    public void accept(Args args) {
-        
-       if(args instanceof GameOverArgs)
-       {
-           GameOverArgs GameOverArgs = ((GameOverArgs)args);
-       }
-       else if(args instanceof PlacedChipArgs)
-       {
-           PlacedChipArgs placedChipArgs = ((PlacedChipArgs)args);
-       }   
     }
 }

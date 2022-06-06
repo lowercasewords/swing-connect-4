@@ -1,7 +1,9 @@
 package Session.Map;
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.event.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import java.util.HashSet;
@@ -17,6 +19,7 @@ import Exceptions.UnimplementedException;
 import Session.Arguments.Args;
 import Session.Arguments.GameOverArgs;
 import Session.Arguments.PlacedChipArgs;
+import static StartUp.HelperLib.log;
 /**
  * MVC Pattern in use!
  * Talks to the database to retrieve the overal scores
@@ -90,7 +93,7 @@ public class MapModel
   // --------------------------------------------------------------------------------------------//
   
   /** Provides the instructions for the map buttons */ 
-  private class ButtonListener implements ItemListener 
+  private class ButtonListener implements ActionListener 
   {
     private final int _row;
     private final int _col;
@@ -99,15 +102,19 @@ public class MapModel
       this._row = row;
       this._col = col;
     }
-
+        
     /** Executes automatically on button click:
-     *  tries to place a chip in correct place, disables the button if the chip is at its spot */
+     *  tries to place a chip in correct place, disables the button if the chip is at its spot 
+     * */
     @Override
-    public void itemStateChanged(ItemEvent e){
+    public void actionPerformed(ActionEvent e) {
       placeChip(_col);
-      if(_mapChips[_row][_col] == null){
-        _mapChips[_row][_col].setEnabled(false);
-      }
+      if(_mapChips[_row][_col] != null){
+          _mapButtons[_row][_col].setEnabled(false);
+        log("Not enough place to put another chip");
+        }
+      else 
+      { log("Enough space still"); }
     }
   }
   
@@ -127,7 +134,7 @@ public class MapModel
    */
   public void restartBoard(int playerCount) throws InvalidPlayerAmountException
   {
-    System.out.println("Starting the game from Map Model");
+    log("Starting the game from Map Model");
     
     Integer boardSideSize = BOARD_SIZES.get(playerCount);
 
@@ -141,8 +148,7 @@ public class MapModel
     for (int row = 0; row < boardSideSize; row++){
         for (int col = 0; col < boardSideSize; col++){
             _mapButtons[row][col] = new JButton();
-            _mapButtons[row][col].setForeground(Color.ORANGE);
-            _mapButtons[row][col].addItemListener(new ButtonListener(row, col));
+            _mapButtons[row][col].addActionListener(new ButtonListener(row, col));
         }
     }
   }
@@ -155,7 +161,7 @@ public class MapModel
         _mapChips[row][col] = null; 
       }
     }
-    System.out.println("The session has ended");
+    log("The session has ended");
   }
   
   /** Notifies Event Listeners if the board is full with 'No Free Space' reason. <b>Doesn't decide the winner!</b>*/
@@ -173,20 +179,21 @@ public class MapModel
   }
   
   /**
-   * Places a chip in the board, then if game is over, then progresses player turn
-   * Notifies the Event Listeners if the game is over by the reasons listed before.
+   * Places a chip in the board and progreses the player turn
    * @param col in what column should chip be placed with the lowest possible row
    * @throws NullPointerException when try accessing a non-existing column
    * @return The row the Chip was placed in
   */
   public int placeChip(int col) throws NullPointerException
   {
-    int row = 0;
-    for (; row < _mapChips.length; row++){
-      if (_mapChips[row][col] != null){
+    int row = _mapChips.length - 1;
+    for (; row > -1; row--){
+      if (_mapChips[row][col] == null){
+        log("placing a chip in the " + row + " row");
         Chip putChip = new Chip(_currentPlayerTurn);
         _mapChips[row][col] = putChip;
-        notifyConsumers(new PlacedChipArgs(putChip, row, col));
+        Args args = new PlacedChipArgs(putChip, row, col);
+        notifyConsumers(args);
         progressPlayerTurn();
         break;
       }
@@ -195,7 +202,7 @@ public class MapModel
     try
     { isBoardFull(); }
     catch(InvalidPlayerWonReasonException ex)
-    { System.out.println(ex); }
+    { log(ex); }
     return row;
   }
 

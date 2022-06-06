@@ -1,4 +1,4 @@
-package Session;
+ package Session;
 
 import java.util.Random;
 import java.util.function.Consumer;
@@ -47,30 +47,29 @@ public class DisplayInfo extends JPanel implements Consumer<Args>
     public DisplayInfo(MapController mapController)
     {
         super(new GridLayout());
-        _mapController = mapController;;
+        _mapController = mapController;
+        _mapController.addModelListener(this);
         showDefault();
-        showPlayerTurns();
     }
-    @Override
-    public String toString() { return "Display Component"; }
+    
     /** Creates randomized text when the game is not running */
     private void showDefault()
     {
         this.removeAll();
-        
+
         String text;
         switch (randomizer.nextInt(3)) {
-            default: text = "NO TEXT"; break;
             case 0: text = "Hi from devs! <3"; break;
             case 1: text = "Nothing interesting here"; break;
             case 2: text = "So...you want to play or not?"; break;
+            default: text = "NO TEXT"; break;
         }
         this.add(new JTextArea(text));
     }
 
     /**
      *  Displays the turns of the current and next player 
-     * */
+     */
     private void showPlayerTurns()
     {
         this.removeAll();
@@ -90,20 +89,16 @@ public class DisplayInfo extends JPanel implements Consumer<Args>
         _currentTurnImage = new ImagePanel(Chip.getCorrectPath(_mapController.getCurrentPlayerTurn()));
         _nextTurnImage = new ImagePanel(Chip.getCorrectPath(_mapController.getNextPlayerTurn()));
     }
-    /** Constructs and Assigns the message about who makes the move right now */
-    @Deprecated
-    public void buildCurrentTurnString() throws UnimplementedException
-    {
-        int nextPlayerTurn = _mapController.getNextPlayerTurn();
-        throw new UnimplementedException();
-    }
 
+    @Override
+    public String toString() { return "Display Component"; }
+    
     /** <b> Runs when the Game Session is over </b> */
     @Override
     public void accept(Args args)
     {
         // Handle Game Over
-        if((GameOverArgs)args != null)
+        if(args instanceof GameOverArgs)
         {
             GameOverArgs gameOverArgs = (GameOverArgs)args;
             this.removeAll();
@@ -125,7 +120,8 @@ public class DisplayInfo extends JPanel implements Consumer<Args>
             }
         }
         // To update the chip information accordingly 
-        if ((PlacedChipArgs)args != null) {
+        else if (args instanceof PlacedChipArgs) {
+            this.removeAll();
             showPlayerTurns();
         }
     }

@@ -12,6 +12,7 @@ import java.util.concurrent.Flow;
 import Session.Map.*;
 import Exceptions.InvalidPlayerAmountException;
 import Exceptions.UnimplementedException;
+import static StartUp.HelperLib.log;
 /**
  * Doesn't follow MVC pattern
  * Configures overall and the upcoming session settings (e.g. player count, map size, sound and music)
@@ -102,7 +103,7 @@ public class Settings extends JPanel
             {
                 if(_playerCountRadButtons[i].isSelected())
                 {
-                    System.out.println("Starting the game from settings");
+                    log("Starting the game from settings");
                     _mapController.startSession(_playerCountRadButtons[i].getPlayerCount());
                     break;
                 }
