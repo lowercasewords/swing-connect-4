@@ -19,6 +19,6 @@ Running this thing in replit in quirky because my conf '.replit' file is not don
 <u><b>If you want to test in, just download the files and run the 'StartUp/Main.java' file, implying that you have Java installed<b></u>
 
 java --version:
-    openjdk 18.0.1 2022-04-19
-    OpenJDK Runtime Environment Homebrew (build 18.0.1+0)
-    OpenJDK 64-Bit Server VM Homebrew (build 18.0.1+0, mixed mode, sharing)
+- openjdk 18.0.1 2022-04-19
+- OpenJDK Runtime Environment Homebrew (build 18.0.1+0)
+- OpenJDK 64-Bit Server VM Homebrew (build 18.0.1+0, mixed mode, sharing)
