@@ -197,7 +197,7 @@ public class MapModel
         
         // check if the placed chip caused the game to end 
         if(checkWinner(row, col)) { 
-          notifyConsumers(new GameOverArgs(putChip.getPlayerTurn())); 
+          notifyConsumers(new GameOverArgs(putChip.getPlayerTurn()));  
         }
         // checkWinner(row, col);
         
