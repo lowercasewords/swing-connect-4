@@ -48,29 +48,28 @@ public class MapController implements Consumer<Args>
         try {
             _model.restartBoard(playerCount);
             _view.visualizeBoard();
-            
         } catch (InvalidPlayerAmountException e) {
             System.out.print("Player Amount is invaild, try again");
         }
-
     }
 
     /** Handles the Producer notifications by downcasting args  */
     @Override
     public void accept(Args args) {
-        log("view accept was invoked");
         if(args instanceof GameOverArgs)
         {
             GameOverArgs gameOverArgs = (GameOverArgs)args;
+            log(gameOverArgs.getWinnerPlayerTurn() + " has won!");
             try {
-                _view.endSessionVisualizer(gameOverArgs);
+                // _view.endSessionVisualizer(gameOverArgs);
+                startSession(_model.getPlayerCount());
             } catch (Exception e) {
                 log(e);
             }
         }
         else if(args instanceof PlacedChipArgs)
         {
-            log("args in view accept was downcasted to PlacedChipsArgs type");
+            // log("args in view accept was downcasted to PlacedChipsArgs type");
             PlacedChipArgs placedChipArgs = (PlacedChipArgs)args;
             _view.addChipVisually(
                 placedChipArgs.getChip(),

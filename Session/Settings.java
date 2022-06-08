@@ -8,17 +8,21 @@ import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.concurrent.Flow;
+import java.util.function.Consumer;
 
 import Session.Map.*;
 import Exceptions.InvalidPlayerAmountException;
 import Exceptions.UnimplementedException;
+import Session.Arguments.PlacedChipArgs;
+import Session.Arguments.Args;
 import static StartUp.HelperLib.log;
+import StartUp.ImagePanel;
 /**
  * Doesn't follow MVC pattern
  * Configures overall and the upcoming session settings (e.g. player count, map size, sound and music)
  * <a href="https://www.tutorialsfield.com/jbutton-click-event/">Event Cheat Sheet</a>
  */
-public class Settings extends JPanel
+public class Settings extends ImagePanel implements Consumer<Args>
 {   
     private static final String START_SIGN = "Start New Session";
     private static final String RESTART_SIGN = "Restart";
@@ -53,6 +57,16 @@ public class Settings extends JPanel
     /* Array of possible amounts of players */
     private static final int[] PLAYER_CHOICES = MapModel.getPlayerChoices();
     
+    /* Used to store information about Player Count in each Radio button */
+    private class JRadioPlayerCount extends JRadioButton{
+        private int _playerCount;
+        public int getPlayerCount() { return _playerCount; }
+        public JRadioPlayerCount(String text, int playerCount) {
+            super(text);
+            _playerCount = playerCount;
+        }
+    }
+
     /** 
      * Creates an Settings object for a Session, and binds itself with MapController in order to affect the session.
      * @param A Map Controller to bind with
@@ -64,6 +78,7 @@ public class Settings extends JPanel
 
         _mapController = mapController;
 
+        _mapController.addModelListener(this);
         //   Configuring Sound and Music parts
         //--------------------------------------------\\
         this.add(_overallSettingsPanel);
@@ -140,19 +155,24 @@ public class Settings extends JPanel
         }
         this.add(_playerSettings);
         _playerSettings.add(_playerMessagePanel);
-        _playerMessagePanel.setBackground(Color.black);
         _playerMessagePanel.add(_playerMessage);
         this.add(_playerCountPanel);
         _playerSettings.add(_playerCountPanel);
         //--------------------------------------------\\
     }
-    /* Used to store information about Player Count in each Radio button */
-    private class JRadioPlayerCount extends JRadioButton{
-        private int _playerCount;
-        public int getPlayerCount() { return _playerCount; }
-        public JRadioPlayerCount(String text, int playerCount) {
-            super(text);
-            _playerCount = playerCount;
+
+    @Override
+    public void accept(Args args) {
+        if(args instanceof PlacedChipArgs)
+        {
+            // log("Accepted chip in settings");
+            PlacedChipArgs placedChipArgs = (PlacedChipArgs)args;
+            // log("Chips image: " + placedChipArgs.getChip().getImagePath());
+            // this.setImage(placedChipArgs.getChip().getImagePath());
+            this.setImage(Chip.getCorrectPath(_mapController.getNextPlayerTurn()));
+            this.revalidate();
+            this.repaint();
         }
     }
+    
 }

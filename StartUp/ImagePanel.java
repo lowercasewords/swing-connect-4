@@ -3,6 +3,7 @@ package StartUp;
 import javax.swing.JPanel;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics;
+import java.awt.LayoutManager;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +31,10 @@ public class ImagePanel extends JPanel
     public ImagePanel()
     {
         this(_missingTexture);
+    }
+    public ImagePanel(LayoutManager layout)
+    {
+        super(layout);
     }
 
     @Override

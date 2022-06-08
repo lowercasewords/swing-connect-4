@@ -1,4 +1,5 @@
 package StartUp;
+
 import javax.swing.*;
 
 import Exceptions.UnimplementedException;
@@ -30,7 +31,6 @@ public class Main extends JFrame
     public Main()
     {
         super("Connect - 4");
-
         visualizeComponents();
     }
     private void visualizeComponents()
@@ -41,21 +41,17 @@ public class Main extends JFrame
 
        MapController gameBoard = new MapController(new MapView(new MapModel()));
        this.add(gameBoard.getView(), BorderLayout.CENTER);
-    //    gameBoard.getView().setBackground(Color.green);
        gameBoard.getView().setPreferredSize(new Dimension(10,10));
-       
-       Settings settings = new Settings(gameBoard);
-       settings.setBackground(Color.red);
-       this.add(settings, BorderLayout.NORTH);   
 
-    //    ScoreBoardController scoreBoard = new ScoreBoardController(new ScoreBoardView(new ScoreBoardModel()));
-    //    scoreBoard.getView().setBackground(Color.black);
-    //    this.add(scoreBoard.getView(), BorderLayout.WEST);
+       Settings settings = new Settings(gameBoard);;
+       this.add(settings, BorderLayout.NORTH);   
+       this.revalidate();
+       this.repaint();
        
        DisplayInfo displayInfo = new DisplayInfo(gameBoard);
        displayInfo.setBackground(Color.CYAN);
-       this.add(displayInfo, BorderLayout.EAST);
-       
+       this.add(displayInfo, BorderLayout.SOUTH);
+
        this.revalidate();
        this.repaint();
 

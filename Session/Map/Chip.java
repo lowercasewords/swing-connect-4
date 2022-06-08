@@ -12,7 +12,7 @@ public class Chip
   public static final String RED = "Images/Red.png";
   public static final String YELLOW = "Images/Yellow.png"; 
   public static final String GREEN = "Images/Green.png"; 
-  public static final String GRAY = "Images/Gray.png"; 
+  public static final String GRAY = "Images/Blue.png"; 
   public static final String UNKNOWN = "Images/missing.png"; 
 
   /** Determines to what player the Chip instance belongs to */
@@ -37,6 +37,7 @@ public class Chip
    */
   public static String getCorrectPath(int playerTurn)
   {
+    
     switch(playerTurn)
     {
       case 1: return RED;
@@ -45,5 +46,13 @@ public class Chip
       case 4: return GRAY;
      default: return UNKNOWN;
     }
+  }
+
+  @Override
+  public boolean equals(Object chip)
+  {
+    if(!(chip instanceof Chip)) { return false; }
+
+    return _playerTurn == ((Chip)chip)._playerTurn;
   }
 }

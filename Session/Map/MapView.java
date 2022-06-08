@@ -50,6 +50,7 @@ public class MapView extends JPanel
     }
 
     /** Handles what should be shown when the Game Session ends */
+    @Deprecated
     public void endSessionVisualizer(GameOverArgs gameOverArgs) throws UnimplementedException
     {
         throw new UnimplementedException();
@@ -76,10 +77,10 @@ public class MapView extends JPanel
         {
             for (int col = 0; col < _gridLayout.getColumns(); col++) 
             {
-                _mapCells[row][col] = new ImagePanel("Images/cell-frame.png");
+                _mapCells[row][col] = new ImagePanel(/*"Images/cell-frame.png"*/);
                 ImagePanel cell = _mapCells[row][col];
                 cell.setLayout(new BorderLayout());
-                cell.setBorder((Border)new LineBorder(Color.BLACK, 5));
+                cell.setBorder((Border)new LineBorder(Color.BLACK, 2));
                 this.add(cell);
                 this.revalidate();
                 this.repaint();

@@ -1,21 +1,15 @@
 package Session.Map;
-import java.awt.Color;
-import java.awt.Image;
 import java.awt.event.*;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.HashMap;
 
 import Exceptions.InvalidPlayerAmountException;
 import Exceptions.InvalidPlayerWonReasonException;
-import Exceptions.UnimplementedException;
 import Session.Arguments.Args;
 import Session.Arguments.GameOverArgs;
 import Session.Arguments.PlacedChipArgs;
@@ -111,38 +105,18 @@ public class MapModel
       placeChip(_col);
       if(_mapChips[_row][_col] != null){
           _mapButtons[_row][_col].setEnabled(false);
-        log("Not enough place to put another chip");
+        // log("Not enough place to put another chip");
         }
-      else 
-      { log("Enough space still"); }
     }
   }
   
   /** Progresses the player turn in the loop manner */
   private void progressPlayerTurn()
   {
-    log("max players: " + _maxPlayerTurn);
-    log("min players: " + _minPlayerTurn);
-    log("Before Changes:");
-    log("\t current turn: " + _currentPlayerTurn);
-    log("\t next turn: " + _nextPlayerTurn);
-
     _currentPlayerTurn = _nextPlayerTurn;
     _nextPlayerTurn++;
-
     
-    if(_nextPlayerTurn > _maxPlayerTurn) 
-    {
-      _nextPlayerTurn = _minPlayerTurn; 
-      log("Restarting player turn");
-    }
-    else 
-    {
-      log("player turn has progressed");
-    }
-    log("After Changes:");
-    log("\t current turn: " + _currentPlayerTurn);
-    log("\t next turn: " + _nextPlayerTurn);
+    if(_nextPlayerTurn > _maxPlayerTurn) { _nextPlayerTurn = _minPlayerTurn; }
   }
   /**
    * Prepares the board logic and sets players up from scratch
@@ -183,7 +157,7 @@ public class MapModel
         _mapChips[row][col] = null; 
       }
     }
-    log("The session has ended");
+    // log("The session has ended");
   }
   
   /** Notifies Event Listeners if the board is full with 'No Free Space' reason. <b>Doesn't decide the winner!</b>*/
@@ -210,194 +184,182 @@ public class MapModel
   public int placeChip(int col) throws NullPointerException
   {
     int row = _mapChips.length - 1;
-    for (; row > -1; row--){
-      if (_mapChips[row][col] == null){
-        log("placing a chip in the " + row + " row");
+    for (; row > -1; row--)
+    {
+      // place the chip if possible and exit for loop
+      if (_mapChips[row][col] == null)
+      {
         Chip putChip = new Chip(_currentPlayerTurn);
         _mapChips[row][col] = putChip;
-        Args args = new PlacedChipArgs(putChip, row, col);
-        log(putChip.getPlayerTurn() + " has moved");
-        notifyConsumers(args);
+        // log("Chip was placed: ("+row+","+col+")");
+        // notify about the placed chip
+        notifyConsumers(new PlacedChipArgs(putChip, row, col));
+        
+        // check if the placed chip caused the game to end 
+        if(checkWinner(row, col)) { notifyConsumers(new GameOverArgs(putChip.getPlayerTurn())); }
+        // checkWinner(row, col);
+        
         progressPlayerTurn();
         break;
       }
     }
-    checkWinner(col, row);
     try
     { isBoardFull(); }
     catch(InvalidPlayerWonReasonException ex)
-    { log(ex); }
+    { log(ex); } 
     return row;
   }
-
   /**
-   * Checks for a winner. Alerts Event Listeners if the winner was decided
-   * @param row row of the chip
-   * @param col column of the chip
+   * Checks if the chip at specific location has triggered the winner event
+   * @param chipRow in what row the base chip is located
+   * @param chipCol in wht column the base chip is located
+   * @return whether the winner was decided
    */
-  private void checkWinner(int row, int col) {
-    // check for connect-WIN_CONNECTIONS WIN_CONNECTIONS times
-    for(int i = 0; i < WIN_CONNECTIONS; i++)
-    {
-      // number of connections (max = WIN_CONNECTIONS)
-      int con = 0;
-      int tempCol = 0;
-      int tempRow = 0;
-      
-      switch(i)
+  private boolean checkWinner(int baseRow, int baseCol)
+  {
+    Chip baseChip = _mapChips[baseRow][baseCol];
+    // log("\t  " + String.format("Base chip: (%d,%d)", baseRow, baseCol));
+    
+    //   Check for winner Vertically
+    //----------------------------------------------------------------------------------------------------\\
+    // Default value of rows to be checked
+    try {
+      int rowCheck = -1;
+      int vertConnections = 1;
+      for (rowCheck = baseRow + 1; rowCheck < baseRow + WIN_CONNECTIONS; rowCheck++)
       {
-        //horizontal 
-        case 0:
-          con = 0;
-          tempCol = col;
-          // right
-          while(con < WIN_CONNECTIONS)
-          {
-            try 
-            {
-              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
-              { con++; }
-              else { break; }
-              tempCol++;
-            }
-            catch (NullPointerException ex) { break; }
-            catch (IndexOutOfBoundsException ex) { break; }
-          }
-          tempCol = col-1;
-          // left
-          while(con < WIN_CONNECTIONS)
-          {
-            try 
-            {
-              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
-              { con++; }
-              else { break; }
-              tempCol--;
-            } catch (NullPointerException ex) { break; }
-              catch (IndexOutOfBoundsException ex) { break; }
-          }
-          if (con >= WIN_CONNECTIONS)
-          {
-            notifyConsumers(new GameOverArgs(_currentPlayerTurn));
-          }
-            break;
-          // vertical
-           case 1: 
-          con = 0;
-          tempCol = col;
-          tempRow = row;
-          //up
-          while(con < WIN_CONNECTIONS)
-          {
-            try 
-            { 
-              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
-              { con++; }
-              else { break; }
-              tempRow++;
-            } catch (NullPointerException ex) { break; }
-              catch (IndexOutOfBoundsException ex) { break; }
-          }
-          
-          tempRow = row - 1;
-          // down
-          while(con < WIN_CONNECTIONS)
-          {
-            try
-            {
-              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
-              { con++; }
-              else { break; }
-              tempRow--;
-            } catch (NullPointerException ex) { break; }
-              catch (IndexOutOfBoundsException ex) { break; }
-          }
-          if (con >= WIN_CONNECTIONS)
-          {
-            notifyConsumers(new GameOverArgs(_currentPlayerTurn));
-          }
-            break; 
-          // diagonal back slash (\)
-          case 2:
-          con = 0;
-          tempCol = col;
-          tempRow = row;
-          // ascending (left + up)
-          while(con < WIN_CONNECTIONS)
-          {
-            try 
-            { 
-              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
-              { con++; }
-              else { break; }
-              tempCol--;
-              tempRow++;
-            } catch (NullPointerException ex) { break; }
-              catch (IndexOutOfBoundsException ex) { break; }
-          }
+        // log(String.format("Checking the: (%d,%d)", rowCheck, baseCol));
+        if(baseChip.equals(_mapChips[rowCheck][baseCol]))
+        {
+          // log(vertConnections + " connections found");
+          vertConnections++; 
+        }
+        if(vertConnections >= WIN_CONNECTIONS)
+        {
+          // log("winner found!");
+          return true; 
+        }
+      }
+    } catch (NullPointerException e) {
+      // log(String.format("Chip (%d,%d) doesn't exist: cell is emty", rowCheck, baseCol));
+    } catch(IndexOutOfBoundsException e) {
+      // log(String.format("Chip (%d,%d) doesn't exist: off the board", rowCheck, baseCol));
+    }
+    //----------------------------------------------------------------------------------------------------//
 
-          tempCol = col + 1;
-          tempRow = row - 1;
-          // descending (right + down)
-          while(con < WIN_CONNECTIONS)
+
+    //  Check for winner Horizontally
+    //---------------------------------------------------------------------\\
+    int horizConnections = 1;
+    // On first repeat, checks to the right; on the second, checks to the left
+    for (int repeat = 0; repeat < 2; repeat++) 
+    {
+      // Default value of columns to be checked
+      int colCheck = -1;
+      // log(String.format("Repeating #%d", repeat + 1));
+      try {
+        // for loop checks right or left depending on the 'repeat' value above 
+        for (
+          colCheck = (repeat == 0 ? baseCol + 1 : baseCol - 1);
+          (repeat == 0 ? colCheck < baseCol + WIN_CONNECTIONS : colCheck >= baseCol - WIN_CONNECTIONS);
+          colCheck = (repeat == 0 ? colCheck+1 : colCheck-1))
+        {
+          // log(String.format("Checking the: (%d,%d)", baseRow, colCheck));
+          if(baseChip.equals(_mapChips[baseRow][colCheck]))
           {
-            try 
-            { 
-              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
-              { con++; }
-              else { break; }
-              tempCol--;
-              tempRow++;
-            } catch (NullPointerException ex) { break; }
-              catch (IndexOutOfBoundsException ex) { break; }
+            horizConnections++; 
           }
-          if (con >= WIN_CONNECTIONS)
+          if(horizConnections >= WIN_CONNECTIONS)
           {
-            notifyConsumers(new GameOverArgs(_currentPlayerTurn));
+            // log("winner found!");
+            return true; 
           }
-           break;
-          // diagonal forward slash (/)
-            case 3:
-          con = 0;
-          tempCol = col;
-          tempRow = row;
-          // ascending (right + up)
-          while(con < WIN_CONNECTIONS)
-          {
-            try 
-            { 
-              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
-              { con++; }
-              else { break; }
-              tempCol++;
-              tempRow++;
-            } catch (NullPointerException ex) { break; }
-              catch (IndexOutOfBoundsException ex) { break; }
-          }
-          
-          tempCol = col - 1;
-          tempRow = row - 1;
-          // descending (left + down)
-          while(con < WIN_CONNECTIONS)
-          {
-            try 
-            { 
-              if(_mapChips[tempRow][tempCol].getPlayerTurn() == _currentPlayerTurn)
-              { con++; }
-              else { break; }
-              tempCol--;
-              tempRow--;
-            } catch (NullPointerException ex) { break; }
-              catch (IndexOutOfBoundsException ex) { break; }
-          }
-          if (con >= WIN_CONNECTIONS)
-          {
-            notifyConsumers(new GameOverArgs(_currentPlayerTurn));
-          }
-          break;
-        default:
-          throw new NullPointerException();
+        }
+        // log("for-loop has ended");
+      } catch (NullPointerException e) {
+        // log(String.format("Chip (%d,%d) doesn't exist: cell is emty", baseRow, colCheck));
+      } catch(IndexOutOfBoundsException e) {
+        // log(String.format("Chip (%d,%d) doesn't exist: off the board", baseRow, colCheck));
       }
     }
+    //---------------------------------------------------------------------//
+    
+
+    //  Check for winner diagonally: both 'backslash' (\) and 'forwardslash' (/)
+    //----------------------------------------------------------------------------------------------------\\
+    // diagonal back slash (\)
+    int diagConnections = 0;
+    int checkCol = baseCol;
+    int checkRow = baseRow;
+    // ascending (left + up)
+    while(diagConnections < WIN_CONNECTIONS)
+    {
+      try 
+      { 
+        if(_mapChips[checkRow][checkCol].getPlayerTurn() == _currentPlayerTurn)
+        { diagConnections++; }
+        else { break; }
+        checkCol--;
+        checkRow++;
+      } catch (NullPointerException ex) { break; }
+        catch (IndexOutOfBoundsException ex) { break; }
+    }
+
+    checkCol = baseCol + 1;
+    checkRow = baseRow - 1;
+    // descending (right + down)
+    while(diagConnections < WIN_CONNECTIONS)
+    {
+      try 
+      { 
+        if(_mapChips[checkRow][checkCol].getPlayerTurn() == _currentPlayerTurn)
+        { diagConnections++; }
+        else { break; }
+        checkCol--;
+        checkRow++;
+      } catch (NullPointerException ex) { break; }
+        catch (IndexOutOfBoundsException ex) { break; }
+    }
+    if (diagConnections >= WIN_CONNECTIONS)
+    { return true; }
+
+    // diagonal forward slash (/)
+    diagConnections = 0;
+    checkCol = baseCol;
+    checkRow = baseRow;
+    // ascending (right + up)
+    while(diagConnections < WIN_CONNECTIONS)
+    {
+      try 
+      { 
+        if(_mapChips[checkRow][checkCol].getPlayerTurn() == _currentPlayerTurn)
+        { diagConnections++; }
+        else { break; }
+        checkCol++;
+        checkRow++;
+      } catch (NullPointerException ex) { break; }
+        catch (IndexOutOfBoundsException ex) { break; }
+    }
+    
+    checkCol = baseCol - 1;
+    checkRow = baseRow - 1;
+    // descending (left + down)
+    while(diagConnections < WIN_CONNECTIONS)
+    {
+      try 
+      { 
+        if(_mapChips[checkRow][checkCol].getPlayerTurn() == _currentPlayerTurn)
+        { diagConnections++; }
+        else { break; }
+        checkCol--;
+        checkRow--;
+      } catch (NullPointerException ex) { break; }
+        catch (IndexOutOfBoundsException ex) { break; }
+      if (diagConnections >= WIN_CONNECTIONS)
+      { return true; }
+    }
+    //----------------------------------------------------------------------------------------------------//
+    return false;
   }
+  
 }
